@@ -27,7 +27,7 @@ class Webhook < Sinatra::Base
 
   def error_reponse err = nil
     {
-      message: err
+      text: err
     }.to_json
   end
 end
@@ -60,7 +60,7 @@ class Command
   private
 
   def self.usages
-    { message: "Say one of the following: #{USAGES.join(', ')}" }.to_json
+    { text: "Say one of the following: #{USAGES.join(', ')}" }.to_json
   end
 
   def help
@@ -69,7 +69,7 @@ class Command
 
   def ping
     {
-      message: ':robot: ping-bot pinging... test'
+      text: ':penguin: pingu pinging... test'
     }.to_json
   end
 end
