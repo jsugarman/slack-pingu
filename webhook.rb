@@ -36,8 +36,8 @@ class CommandError < StandardError; end
 
 class Command
   USAGES = [
-      '@pingbot ping &lt;domain-name.co.uk&gt;',
-      '@pingbot ping &lt;domain-name.co.uk&gt;[,&lt;other-domain.dsd.io&gt;]'
+      'pingu ping &lt;domain-name.co.uk&gt;',
+      'pingu ping &lt;domain-name.co.uk&gt;[,&lt;other-domain.dsd.io&gt;]'
   ].map { |usage| "`#{usage}`" }.freeze
 
   attr_reader :command
@@ -48,9 +48,9 @@ class Command
 
   def response
     case
-    when command.match?(/@ping-?bot\s+ping\s+([\w\d\.-])+(,\s?[\w\d\.-]+)*/i)
+    when command.match?(/pingu\s+ping\s+([\w\d\.-])+(,\s?[\w\d\.-]+)*/i)
       ping
-    when command.match?(/@ping-?bot\s+help/i)
+    when command.match?(/pingu\s+help/i)
       help
     else
       raise CommandError, "#{command} is invalid" unless command.match? /@ping-?bot\s+ping\s+([\w\d\.-])+(,\s?[\w\d\.-]+)*/i
