@@ -14,7 +14,7 @@ class Webhook < Sinatra::Base
       # TODO: implement slack token
       raise SecurityError, 'Please check the value of `WEBHOOK_TOKEN` in env matches that in the webhook' unless (ENV['WEBHOOK_TOKEN'] || !params[:token].nil? && params[:token].eql?(ENV['WEBHOOK_TOKEN']))
 
-      command = Command.new(params[:command])
+      command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
       body error_reponse(err)
