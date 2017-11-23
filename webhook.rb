@@ -11,23 +11,28 @@ class Webhook < Sinatra::Base
   post '/webhook' do
     content_type 'application/json'
     begin
-      # TODO: implement slack token
       raise SecurityError, 'Please check the value of `WEBHOOK_TOKEN` in env matches that in the webhook' unless (ENV['WEBHOOK_TOKEN'] || !params[:token].nil? && params[:token].eql?(ENV['WEBHOOK_TOKEN']))
-
       command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
       body error_reponse(err)
     rescue CommandError => err
-      body error_reponse(err) + error_reponse(Command.usages)
+      body error_reponse(err) #+ error_reponse(Command.usages)
     end
   end
 
   private
 
-  def error_reponse err = nil
+  def error_reponse err
     {
-      text: err
+      attachments: [
+        {
+          fallback: 'Error',
+          pretext: 'Meep meep!',
+          color: 'danger',
+          text: err
+        }
+      ]
     }.to_json
   end
 end
@@ -53,7 +58,7 @@ class Command
     when command.match?(/pingu\s+help/i)
       help
     else
-      raise CommandError, "#{command} is invalid" unless command.match? /@ping-?bot\s+ping\s+([\w\d\.-])+(,\s?[\w\d\.-]+)*/i
+      raise CommandError, "do not understand the command \"#{command.sub(/pingu/i,'')}\""
     end
   end
 
@@ -69,7 +74,14 @@ class Command
 
   def ping
     {
-      text: ':penguin: pingu pinging... test'
+      attachments: [
+        {
+          fallback: 'Success',
+          color: 'good',
+          pretext: ':penguin: pingu pinging... test',
+          text: ':penguin: ping'
+        }
+      ]
     }.to_json
   end
 end
