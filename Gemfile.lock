@@ -1,11 +1,20 @@
 GEM
   remote: http://rubygems.org/
   specs:
+    byebug (9.1.0)
+    coderay (1.1.2)
+    method_source (0.9.0)
     mustermann (1.0.1)
+    pry (0.11.3)
+      coderay (~> 1.1.0)
+      method_source (~> 0.9.0)
     puma (3.10.0)
     rack (2.0.3)
     rack-protection (2.0.0)
       rack
+    rack-test (0.6.3)
+      rack (>= 1.0)
+    ruby_ttt (0.4.9)
     sinatra (2.0.0)
       mustermann (~> 1.0)
       rack (~> 2.0)
@@ -17,7 +26,11 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  byebug
+  pry
   puma
+  rack-test (~> 0.6.3)
+  ruby_ttt (~> 0.4.9)
   sinatra
 
 RUBY VERSION
