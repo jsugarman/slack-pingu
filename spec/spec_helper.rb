@@ -16,7 +16,9 @@
 
 require_relative '../webhook'
 require 'pry'
+require 'awesome_print'
 require 'rack/test'
+require 'json_spec'
 require 'ruby_ttt'
 require 'sinatra/base'
 
@@ -116,4 +118,5 @@ RSpec.configure do |config|
   config.tty = true
   config.formatter = :documentation
   config.include Rack::Test::Methods
+  config.include JsonSpec::Helpers
 end

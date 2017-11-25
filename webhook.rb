@@ -15,15 +15,15 @@ class Webhook < Sinatra::Base
       command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
-      body error_reponse(err)
+      body error_response(err)
     rescue CommandError => err
-      body error_reponse(err) #+ error_reponse(Command.usages)
+      body error_response(err) #+ error_response(Command.usages)
     end
   end
 
   private
 
-  def error_reponse err
+  def error_response err
     {
       attachments: [
         {

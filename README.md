@@ -1,5 +1,10 @@
 **USAGE**
 
 `
-ping-bot ping domain-name
+pingu ping <domain-name>
 `
+
+**TODO**
+  - [x] more specs
+  - [x] format help
+  - [x] happy path
