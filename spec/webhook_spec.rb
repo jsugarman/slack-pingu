@@ -74,6 +74,30 @@ RSpec.describe Webhook do
           end
         end
       end
+
+      context 'when sent a ping command with one domain arg' do
+        let(:text) { 'pingu ping my-domain.co.uk' }
+
+        xit 'issues GET to my-domain.co.uk/ping' do
+        end
+
+        context 'when ping endpoint responds' do
+          xit 'returns ping response to webhook caller' do
+          end
+        end
+      end
+
+      context 'when sent a ping command with multiple domain args' do
+        let(:text) { 'pingu ping my-domain.co.uk,my-other-domain.co.uk' }
+
+        xit 'issues GET to each domains ping endpoint' do
+        end
+
+        context 'when ping endpoint responds' do
+          xit 'returns each ping response to webhook caller' do
+          end
+        end
+      end
     end
   end
 end

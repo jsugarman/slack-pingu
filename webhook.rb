@@ -53,10 +53,10 @@ class Command
 
   def response
     case
-    when command.match?(/pingu\s+ping\s+([\w\d\.-])+(,\s?[\w\d\.-]+)*/i)
-      ping
+    when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(,\s?[\w\d\.-]+)*>/i)
+      ping domains
     when command.match?(/pingu\s+help/i)
-      help
+      help_response
     else
       raise CommandError, "do not understand the command \"#{command.sub(/pingu/i,'')}\""
     end
@@ -68,11 +68,29 @@ class Command
     { text: "Say one of the following: #{USAGES.join(', ')}" }.to_json
   end
 
-  def help
+  def help_response
     self.class.usages
   end
 
+  def domains
+    @domains ||= command.
+      match(/(pingu\s+)(ping\s+)(<[^>]*>)(.*)/i).
+      captures[2].
+      tr('<>','').
+      split(/[\s,]+/)
+  end
+
   def ping
+    domains.each do |domain|
+      request(domain + '/ping')
+    end
+  end
+
+  def request
+    
+  end
+
+  def ping_response
     {
       attachments: [
         {

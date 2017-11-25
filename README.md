@@ -5,6 +5,7 @@ pingu ping <domain-name>
 `
 
 **TODO**
-  - [x] more specs
-  - [x] format help
-  - [x] happy path
+  - [ ] more specs
+  - [ ] format help
+  - [ ] happy path
+  - [ ] add logging
