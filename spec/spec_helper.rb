@@ -16,11 +16,15 @@
 
 require_relative '../webhook'
 require 'pry'
+require 'pry-byebug'
 require 'awesome_print'
 require 'rack/test'
 require 'json_spec'
 require 'ruby_ttt'
 require 'sinatra/base'
+require 'webmock/rspec'
+
+WebMock.disable_net_connect!(allow_localhost: true)
 
 # rspec expects app.rb to define the application
 # so override with custom wrapper application class
@@ -119,4 +123,15 @@ RSpec.configure do |config|
   config.formatter = :documentation
   config.include Rack::Test::Methods
   config.include JsonSpec::Helpers
+
+  # TODO: move to its own file
+  def stubbed_ping_response
+    { build_version: "1.0" }.to_json
+  end
+
+  config.before(:each) do
+    stub_request(:get, /mocked-domain.dsd.io\/ping(\.json)?/).
+      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(status: 200, body: stubbed_ping_response, headers: {})
+  end
 end

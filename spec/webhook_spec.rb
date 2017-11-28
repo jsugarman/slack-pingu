@@ -20,8 +20,10 @@ RSpec.describe Webhook do
     describe 'POST /webhook' do
       let(:token) { 'my_fake_token' }
       let(:params) { { token: token, text: text } }
+      let(:command) { instance_double('command') }
+
       before do |example|
-        allow(ENV).to receive(:[]).with('WEBHOOK_TOKEN').and_return token
+        allow(ENV).to receive(:fetch).with('WEBHOOK_TOKEN').and_return token
         post '/webhook', params unless example.metadata[:skip_post]
       end
 
@@ -76,19 +78,36 @@ RSpec.describe Webhook do
       end
 
       context 'when sent a ping command with one domain arg' do
-        let(:text) { 'pingu ping my-domain.co.uk' }
+        subject { last_response.body }
 
-        xit 'issues GET to my-domain.co.uk/ping' do
+        let(:domain) { 'mocked-domain.dsd.io' }
+        let(:text) { "pingu ping <#{domain}>" }
+        let(:ping_response) do
+            {
+              attachments: [
+                {
+                  fallback: 'Error',
+                  pretext: 'Meep meep!',
+                  color: 'danger',
+                  text: {
+                    'mocked-domain.dsd.io': { build_version: "1.0" }
+                  }
+                }
+              ]
+            }.to_json
         end
 
-        context 'when ping endpoint responds' do
-          xit 'returns ping response to webhook caller' do
+        context 'body' do
+          it 'returns slack response ' do
+            is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/text")
+            is_expected.to include_json("\"build_version\"").at_path("attachments/0/text")
+            is_expected.to include_json("\"1.0\"").at_path("attachments/0/text")
           end
         end
       end
 
       context 'when sent a ping command with multiple domain args' do
-        let(:text) { 'pingu ping my-domain.co.uk,my-other-domain.co.uk' }
+        let(:text) { 'pingu ping my-domain.co.uk, my-other-domain.co.uk' }
 
         xit 'issues GET to each domains ping endpoint' do
         end

@@ -1,5 +1,7 @@
 require 'sinatra/base'
 require 'json'
+require 'pry'
+require 'net/http'
 
 class Webhook < Sinatra::Base
   get '/' do
@@ -11,7 +13,7 @@ class Webhook < Sinatra::Base
   post '/webhook' do
     content_type 'application/json'
     begin
-      raise SecurityError, 'Please check the value of `WEBHOOK_TOKEN` in env matches that in the webhook' unless (ENV['WEBHOOK_TOKEN'] || !params[:token].nil? && params[:token].eql?(ENV['WEBHOOK_TOKEN']))
+      raise SecurityError, 'Please check the value of `WEBHOOK_TOKEN` in env matches that in the webhook' unless (ENV.fetch('WEBHOOK_TOKEN') || !params[:token].nil? && params[:token].eql?(ENV.fetch('WEBHOOK_TOKEN')))
       command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
@@ -52,9 +54,11 @@ class Command
   end
 
   def response
+    puts "Interpreting #{command}"
     case
-    when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(,\s?[\w\d\.-]+)*>/i)
-      ping domains
+    when command.match?(/pingu\s+ping\s+&lt;([\w\d\.-])+(,\s?[\w\d\.-]+)*&gt;/i)
+      ping_responses = ping
+      slack_response(ping_responses)
     when command.match?(/pingu\s+help/i)
       help_response
     else
@@ -74,32 +78,72 @@ class Command
 
   def domains
     @domains ||= command.
-      match(/(pingu\s+)(ping\s+)(<[^>]*>)(.*)/i).
+      match(/(pingu\s+)(ping\s+)(&lt;[^&gt;]*&gt;)(.*)/i).
       captures[2].
-      tr('<>','').
+      tr('&lt;','').
+      tr('&gt;','').
       split(/[\s,]+/)
   end
 
+  def request url
+    uri = URI(url)
+    ::Net::HTTP.get(uri)
+  end
+
   def ping
-    domains.each do |domain|
-      request(domain + '/ping')
+    domains.each_with_object({}) do |domain, memo|
+      memo[domain.to_sym] = request('https://' + domain + '/ping')
     end
   end
 
-  def request
-    
+  def slack_response ping_responses
+    {
+      attachments: ping_responses.map { |k, v| SlackPingResponse.new(k, v).attachment }
+    }.to_json
+  end
+end
+
+class SlackPingResponse
+  attr_reader :domain, :response
+
+  def initialize domain, response
+    @domain = domain
+    @response = response
   end
 
-  def ping_response
+  def attachment
+    if response
+      success("#{domain} all good!\nResponse: #{response}")
+    else
+      failure("#{domain} is not well!")
+    end
+  end
+
+  private
+
+  def success text
+    self.class.success_template text
+  end
+
+  def failure text
+    self.class.failure_template text
+  end
+
+  def self.success_template(text)
     {
-      attachments: [
-        {
-          fallback: 'Success',
-          color: 'good',
-          pretext: ':penguin: pingu pinging... test',
-          text: ':penguin: ping'
-        }
-      ]
-    }.to_json
+      fallback: 'Success',
+      color: 'good',
+      pretext: ':penguin: woohoo!',
+      text: text
+    }
+  end
+
+  def self.failure_template(text)
+    {
+      fallback: 'Failure',
+      color: 'danger',
+      pretext: 'Meep meep!',
+      text: text
+    }
   end
 end
