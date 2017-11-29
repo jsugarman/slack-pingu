@@ -67,7 +67,7 @@ RSpec.describe Webhook do
             is_expected.to have_json_path('attachments/0')
           end
 
-          it 'returns slack formatting for an error' do
+          it 'returns slack formatted error message' do
             is_expected.to have_json_size(1).at_path('attachments')
             is_expected.to be_json_eql("\"danger\"").at_path("attachments/0/color")
             is_expected.to be_json_eql("\"Meep meep!\"").at_path("attachments/0/pretext")
@@ -77,11 +77,11 @@ RSpec.describe Webhook do
         end
       end
 
-      context 'when sent a ping command with one domain arg' do
+      context 'when sent a ping command with one domain argument' do
         subject { last_response.body }
 
         let(:domain) { 'mocked-domain.dsd.io' }
-        let(:text) { "pingu ping <#{domain}>" }
+        let(:text) { "pingu ping &lt;#{domain}&gt;" }
         let(:ping_response) do
             {
               attachments: [
@@ -98,10 +98,17 @@ RSpec.describe Webhook do
         end
 
         context 'body' do
-          it 'returns slack response ' do
-            is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/text")
-            is_expected.to include_json("\"build_version\"").at_path("attachments/0/text")
-            is_expected.to include_json("\"1.0\"").at_path("attachments/0/text")
+          it 'contains slack formatted success message' do
+            is_expected.to be_json_eql("\"Success\"").at_path("attachments/0/fallback")
+          end
+
+          it 'contains domain name pinged' do
+            is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/pretext")
+          end
+
+          it 'contains text representing ping response' do
+            puts JSON.parse last_response.body
+            is_expected.to be_json_eql("\"1.0\"").at_path("attachments/0/text")
           end
         end
       end

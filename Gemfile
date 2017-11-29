@@ -3,6 +3,7 @@ ruby '2.4.2'
 
 gem 'sinatra'
 gem 'puma'
+gem 'nokogiri'
 gem 'pry'
 
 group :test do

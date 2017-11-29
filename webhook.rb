@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'json'
 require 'pry'
 require 'net/http'
+require 'nokogiri'
 
 class Webhook < Sinatra::Base
   get '/' do
@@ -50,23 +51,27 @@ class Command
   attr_reader :command
 
   def initialize command
-    @command = command
+    @command = strip_html(command)
   end
 
   def response
     puts "Interpreting #{command}"
     case
-    when command.match?(/pingu\s+ping\s+&lt;([\w\d\.-])+(,\s?[\w\d\.-]+)*&gt;/i)
+    when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(,\s*[\w\d\.-]+)*>/i)
       ping_responses = ping
       slack_response(ping_responses)
     when command.match?(/pingu\s+help/i)
       help_response
     else
-      raise CommandError, "do not understand the command \"#{command.sub(/pingu/i,'')}\""
+      raise CommandError, "do not understand the command \"#{command.sub(/pingu\s+/i,'')}\""
     end
   end
 
   private
+
+  def strip_html(html)
+    Nokogiri::HTML(html).content
+  end
 
   def self.usages
     { text: "Say one of the following: #{USAGES.join(', ')}" }.to_json
@@ -78,10 +83,9 @@ class Command
 
   def domains
     @domains ||= command.
-      match(/(pingu\s+)(ping\s+)(&lt;[^&gt;]*&gt;)(.*)/i).
+      match(/(pingu\s+)(ping\s+)(<[^>]*>)(.*)/i).
       captures[2].
-      tr('&lt;','').
-      tr('&gt;','').
+      tr('<>','').
       split(/[\s,]+/)
   end
 
@@ -113,7 +117,7 @@ class SlackPingResponse
 
   def attachment
     if response
-      success("#{domain} all good!\nResponse: #{response}")
+      success("#{domain} all good!", response)
     else
       failure("#{domain} is not well!")
     end
@@ -121,19 +125,19 @@ class SlackPingResponse
 
   private
 
-  def success text
-    self.class.success_template text
+  def success pretext, text
+    self.class.success_template pretext, text
   end
 
   def failure text
     self.class.failure_template text
   end
 
-  def self.success_template(text)
+  def self.success_template(pretext, text)
     {
       fallback: 'Success',
       color: 'good',
-      pretext: ':penguin: woohoo!',
+      pretext: ":penguin: #{pretext}",
       text: text
     }
   end
@@ -142,7 +146,7 @@ class SlackPingResponse
     {
       fallback: 'Failure',
       color: 'danger',
-      pretext: 'Meep meep!',
+      pretext: ':pengiun: Meep meep!',
       text: text
     }
   end
