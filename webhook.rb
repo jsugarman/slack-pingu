@@ -45,7 +45,7 @@ class CommandError < StandardError; end
 class Command
   USAGES = [
       'pingu ping &lt;domain-name.co.uk&gt;',
-      'pingu ping &lt;domain-name.co.uk&gt;[,&lt;other-domain.dsd.io&gt;]'
+      'pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;'
   ].map { |usage| "`#{usage}`" }.freeze
 
   attr_reader :command
@@ -126,28 +126,36 @@ class SlackPingResponse
   private
 
   def success pretext, text
-    self.class.success_template pretext, text
+    success_template pretext, text
   end
 
   def failure text
-    self.class.failure_template text
+    failure_template text
   end
 
-  def self.success_template(pretext, text)
+  def success_template(pretext, text)
     {
       fallback: 'Success',
       color: 'good',
       pretext: ":penguin: #{pretext}",
-      text: text
+      text: text,
+      fields: fields_for(text)
     }
   end
 
-  def self.failure_template(text)
+  def failure_template(text)
     {
       fallback: 'Failure',
       color: 'danger',
       pretext: ':pengiun: Meep meep!',
       text: text
     }
+  end
+
+  def fields_for text
+    attributes = JSON.parse(text)
+    attributes.each_with_object([]) do |(k, v), memo|
+      memo << { title: k, value: v, short: true }
+    end
   end
 end
