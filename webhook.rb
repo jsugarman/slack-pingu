@@ -3,6 +3,7 @@ require 'json'
 require 'pry'
 require 'net/http'
 require 'nokogiri'
+require 'inflecto'
 
 class Webhook < Sinatra::Base
   get '/' do
@@ -133,13 +134,12 @@ class SlackPingResponse
     failure_template text
   end
 
-  def success_template(pretext, text)
+  def success_template(pretext, response)
     {
       fallback: 'Success',
       color: 'good',
       pretext: ":penguin: #{pretext}",
-      text: text,
-      fields: fields_for(text)
+      fields: present(response)
     }
   end
 
@@ -152,10 +152,16 @@ class SlackPingResponse
     }
   end
 
-  def fields_for text
-    attributes = JSON.parse(text)
+  def present json
+    attributes = JSON.parse(json)
     attributes.each_with_object([]) do |(k, v), memo|
-      memo << { title: k, value: v, short: true }
+      memo << { title: k.humanize, value: v, short: true }
     end
+  end
+end
+
+class String
+  def humanize
+    Inflecto.humanize(self)
   end
 end

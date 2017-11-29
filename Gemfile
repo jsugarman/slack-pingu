@@ -4,6 +4,7 @@ ruby '2.4.2'
 gem 'sinatra'
 gem 'puma'
 gem 'nokogiri'
+gem 'inflecto', '~> 0.0.2'
 gem 'pry'
 
 group :test do

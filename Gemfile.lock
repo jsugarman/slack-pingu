@@ -10,6 +10,7 @@ GEM
       safe_yaml (~> 1.0.0)
     diff-lcs (1.3)
     hashdiff (0.3.7)
+    inflecto (0.0.2)
     json_spec (1.1.5)
       multi_json (~> 1.0)
       rspec (>= 2.0, < 4.0)
@@ -63,6 +64,7 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
+  inflecto (~> 0.0.2)
   json_spec (~> 1.1, >= 1.1.5)
   nokogiri
   pry

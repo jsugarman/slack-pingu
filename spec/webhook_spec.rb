@@ -106,9 +106,9 @@ RSpec.describe Webhook do
             is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/pretext")
           end
 
-          it 'contains text representing ping response' do
-            puts JSON.parse last_response.body
-            is_expected.to be_json_eql("\"1.0\"").at_path("attachments/0/text")
+          it 'contains humanized text representing ping response' do
+            is_expected.to be_json_eql("\"Build version\"").at_path("attachments/0/fields/0/title")
+            is_expected.to be_json_eql("\"1.0\"").at_path("attachments/0/fields/0/value")
           end
         end
       end
