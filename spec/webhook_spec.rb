@@ -128,6 +128,29 @@ RSpec.describe Webhook do
           end
         end
       end
+
+
+      context 'when sent a healthcheck command with one domain argument' do
+        subject { last_response.body }
+
+        let(:domain) { 'mocked-domain.dsd.io' }
+        let(:text) { "pingu healthcheck &lt;#{domain}&gt;" }
+
+        context 'body' do
+          it 'contains slack formatted success message' do
+            is_expected.to be_success_at_attachment 0
+          end
+
+          it 'contains domain name healtchecked' do
+            is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/pretext")
+          end
+
+          it 'contains humanized text representing healthcheck response' do
+            is_expected.to be_json_eql("\"Database\"").at_path("attachments/0/fields/0/title")
+            is_expected.to be_json_eql("\"true\"").at_path("attachments/0/fields/0/value")
+          end
+        end
+      end
     end
   end
 end

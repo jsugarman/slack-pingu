@@ -45,8 +45,8 @@ class CommandError < StandardError; end
 
 class Command
   USAGES = [
-      'pingu ping &lt;domain-name.co.uk&gt;',
-      'pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;'
+      'pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;',
+      'pingu healthcheck &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;'
   ].map { |usage| "`#{usage}`" }.freeze
 
   attr_reader :command
@@ -59,8 +59,9 @@ class Command
     puts "Interpreting #{command}" unless ENV.fetch('RACK_ENV',nil) == 'test'
     case
     when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
-      ping_responses = ping
-      slack_response(ping_responses)
+      slack_response(ping)
+    when command.match?(/pingu\s+healthcheck\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
+      slack_response(healthcheck)
     when command.match?(/pingu\s+help/i)
       help_response
     else
@@ -74,17 +75,13 @@ class Command
     Nokogiri::HTML(html).content
   end
 
-  def self.usages
-    { text: "Say one of the following: #{USAGES.join(', ')}" }.to_json
-  end
-
   def help_response
-    self.class.usages
+    { text: "Say one of the following: #{USAGES.join(', ')}" }.to_json
   end
 
   def domains
     @domains ||= command.
-      match(/(pingu\s+)(ping\s+)(<[^>]*>)(.*)/i).
+      match(/(pingu\s+)((?:ping|healthcheck)\s+)(<[^>]*>)(.*)/i).
       captures[2].
       tr('<>','').
       split(/[\s*,\s*]+/)
@@ -101,14 +98,20 @@ class Command
     end
   end
 
-  def slack_response ping_responses
+  def healthcheck
+    domains.each_with_object({}) do |domain, memo|
+      memo[domain.to_sym] = request('https://' + domain + '/healthcheck')
+    end
+  end
+
+  def slack_response responses
     {
-      attachments: ping_responses.map { |k, v| SlackPingResponse.new(k, v).attachment }
+      attachments: responses.map { |k, v| SlackResponse.new(k, v).attachment }
     }.to_json
   end
 end
 
-class SlackPingResponse
+class SlackResponse
   attr_reader :domain, :response
 
   def initialize domain, response

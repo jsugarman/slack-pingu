@@ -135,9 +135,17 @@ RSpec.configure do |config|
     { build_version: "1.0" }.to_json
   end
 
+  def stubbed_healthcheck_response
+    { checks: { database: true, redis: true } }.to_json
+  end
+
   config.before(:each) do
     stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/ping(\.json)?/).
       with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
       to_return(status: 200, body: stubbed_ping_response, headers: {})
+
+    stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/healthcheck(\.json)?/).
+      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+      to_return(status: 200, body: stubbed_healthcheck_response, headers: {})
   end
 end
