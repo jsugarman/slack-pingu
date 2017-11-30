@@ -23,6 +23,7 @@ RSpec.describe Webhook do
       let(:command) { instance_double('command') }
 
       before do |example|
+        allow(ENV).to receive(:fetch).and_call_original
         allow(ENV).to receive(:fetch).with('WEBHOOK_TOKEN').and_return token
         post '/webhook', params unless example.metadata[:skip_post]
       end
@@ -63,15 +64,12 @@ RSpec.describe Webhook do
             }.to_json
           end
 
-          it 'returns slack attachment JSON' do
-            is_expected.to have_json_path('attachments/0')
+          it 'returns slack attachment' do
+            is_expected.to have_json_size(1).at_path('attachments')
           end
 
-          it 'returns slack formatted error message' do
-            is_expected.to have_json_size(1).at_path('attachments')
-            is_expected.to be_json_eql("\"danger\"").at_path("attachments/0/color")
-            is_expected.to be_json_eql("\"Meep meep!\"").at_path("attachments/0/pretext")
-            is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fallback")
+          it 'returns slack error attachment' do
+            is_expected.to be_error_at_attachment 0
             is_expected.to include_json("\"test\"").at_path("attachments/0/text")
           end
         end
@@ -82,24 +80,10 @@ RSpec.describe Webhook do
 
         let(:domain) { 'mocked-domain.dsd.io' }
         let(:text) { "pingu ping &lt;#{domain}&gt;" }
-        let(:ping_response) do
-            {
-              attachments: [
-                {
-                  fallback: 'Error',
-                  pretext: 'Meep meep!',
-                  color: 'danger',
-                  text: {
-                    'mocked-domain.dsd.io': { build_version: "1.0" }
-                  }
-                }
-              ]
-            }.to_json
-        end
 
         context 'body' do
           it 'contains slack formatted success message' do
-            is_expected.to be_json_eql("\"Success\"").at_path("attachments/0/fallback")
+            is_expected.to be_success_at_attachment 0
           end
 
           it 'contains domain name pinged' do
@@ -113,14 +97,34 @@ RSpec.describe Webhook do
         end
       end
 
-      context 'when sent a ping command with multiple domain args' do
-        let(:text) { 'pingu ping my-domain.co.uk, my-other-domain.co.uk' }
+      context 'when sent a ping command with multiple domain arguments' do
+        subject { last_response.body }
 
-        xit 'issues GET to each domains ping endpoint' do
+        let(:domains) { %w(mocked-domain.dsd.io mocked-domain-1.dsd.io) }
+
+        context 'separated by commas' do
+          let(:text) { "pingu ping &lt;#{domains.join(',')}&gt;" }
+
+          it 'returns a slack attachment for each domain seperated by commas' do
+            is_expected.to have_json_size(2).at_path('attachments')
+            is_expected.to be_success_at_attachment 0
+            is_expected.to be_success_at_attachment 1
+          end
         end
 
-        context 'when ping endpoint responds' do
-          xit 'returns each ping response to webhook caller' do
+        context 'separated by whitespace and commas' do
+          context 'space,space' do
+            let(:text) { "pingu ping &lt;#{domains.join('  ,  ')}&gt;" }
+            it 'returns a slack attachment for each domain seperated by commas with whitespace' do
+              is_expected.to have_json_size(2).at_path('attachments')
+            end
+          end
+
+          context ',space' do
+            let(:text) { "pingu ping &lt;#{domains.join(',  ')}&gt;" }
+            it 'returns a slack attachment for each domain seperated by commas with whitespace' do
+              is_expected.to have_json_size(2).at_path('attachments')
+            end
           end
         end
       end

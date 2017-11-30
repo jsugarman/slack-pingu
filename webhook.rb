@@ -56,9 +56,9 @@ class Command
   end
 
   def response
-    puts "Interpreting #{command}"
+    puts "Interpreting #{command}" unless ENV.fetch('RACK_ENV',nil) == 'test'
     case
-    when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(,\s*[\w\d\.-]+)*>/i)
+    when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
       ping_responses = ping
       slack_response(ping_responses)
     when command.match?(/pingu\s+help/i)
@@ -87,7 +87,7 @@ class Command
       match(/(pingu\s+)(ping\s+)(<[^>]*>)(.*)/i).
       captures[2].
       tr('<>','').
-      split(/[\s,]+/)
+      split(/[\s*,\s*]+/)
   end
 
   def request url

@@ -26,6 +26,12 @@ require 'webmock/rspec'
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
+Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each { |f| require f }
+
+
+# let app know we are testing
+ENV['RACK_ENV'] = 'test'
+
 # rspec expects app.rb to define the application
 # so override with custom wrapper application class
 def app
@@ -130,7 +136,7 @@ RSpec.configure do |config|
   end
 
   config.before(:each) do
-    stub_request(:get, /mocked-domain.dsd.io\/ping(\.json)?/).
+    stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/ping(\.json)?/).
       with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
       to_return(status: 200, body: stubbed_ping_response, headers: {})
   end
