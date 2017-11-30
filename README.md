@@ -1,11 +1,17 @@
 **USAGE**
 
-`
+To call a ping endpoint on an app:
+```
 pingu ping <domain-name[,domain-name-1][,domain-name-2]>
-`
+```
+
+To call a healthcheck endpoint on an app:
+```
+pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
+```
 
 **TODO**
-  - [ ] happy path spes
+  - [X] happy path spes
   - [ ] unhappy path specs
   - [ ] handle timeout on a call to ping
   - [ ] add logging
@@ -15,3 +21,4 @@ pingu ping <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] move command class to separate file and spec
   - [ ] move slack ping response class to separate file and spec
   - [ ] move string extension to separate file and spec
+  - [ ] rename token
