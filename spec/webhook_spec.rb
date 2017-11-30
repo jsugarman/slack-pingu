@@ -128,8 +128,7 @@ RSpec.describe Webhook do
           end
         end
       end
-
-
+      
       context 'when sent a healthcheck command with one domain argument' do
         subject { last_response.body }
 
@@ -148,6 +147,8 @@ RSpec.describe Webhook do
           it 'contains humanized text representing healthcheck response' do
             is_expected.to be_json_eql("\"Database\"").at_path("attachments/0/fields/0/title")
             is_expected.to be_json_eql("\"true\"").at_path("attachments/0/fields/0/value")
+            is_expected.to be_json_eql("\"Redis\"").at_path("attachments/0/fields/1/title")
+            is_expected.to be_json_eql("\"true\"").at_path("attachments/0/fields/1/value")
           end
         end
       end

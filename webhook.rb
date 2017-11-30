@@ -158,7 +158,12 @@ class SlackResponse
   def present json
     attributes = JSON.parse(json)
     attributes.each_with_object([]) do |(k, v), memo|
-      memo << { title: k.humanize, value: v, short: true }
+      if v.is_a?(Hash)
+        memo << present(v.to_json)
+        memo.flatten!
+      else
+        memo << { title: k.humanize, value: v.to_s, short: true }
+      end
     end
   end
 end
