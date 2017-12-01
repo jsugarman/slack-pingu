@@ -44,10 +44,10 @@ end
 class CommandError < StandardError; end
 
 class Command
-  USAGES = [
-      'pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;',
-      'pingu healthcheck &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;'
-  ].map { |usage| "`#{usage}`" }.freeze
+  # USAGES = [
+  #     'pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;',
+  #     'pingu healthcheck &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;'
+  # ].map { |usage| "`#{usage}`" }.freeze
 
   attr_reader :command
 
@@ -75,8 +75,15 @@ class Command
     Nokogiri::HTML(html).content
   end
 
+  def usages
+    <<~EOT
+      \n- `pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;`
+      \n- `pingu healthcheck &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;`
+    EOT
+  end
+
   def help_response
-    { text: "Say one of the following: #{USAGES.join(', ')}" }.to_json
+    { text: "Say one of the following:#{usages}" }.to_json
   end
 
   def domains
