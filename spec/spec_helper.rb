@@ -24,13 +24,13 @@ require 'ruby_ttt'
 require 'sinatra/base'
 require 'webmock/rspec'
 
-WebMock.disable_net_connect!(allow_localhost: true)
-
+# include support files
 Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each { |f| require f }
-
 
 # let app know we are testing
 ENV['RACK_ENV'] = 'test'
+
+WebMock.disable_net_connect!(allow_localhost: true)
 
 # rspec expects app.rb to define the application
 # so override with custom wrapper application class

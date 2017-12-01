@@ -24,7 +24,7 @@ RSpec.describe Webhook do
 
       before do |example|
         allow(ENV).to receive(:fetch).and_call_original
-        allow(ENV).to receive(:fetch).with('WEBHOOK_TOKEN').and_return token
+        expect(ENV).to receive(:fetch).with('SLACK_API_TOKEN').and_return token
         post '/webhook', params unless example.metadata[:skip_post]
       end
 
@@ -128,7 +128,7 @@ RSpec.describe Webhook do
           end
         end
       end
-      
+
       context 'when sent a healthcheck command with one domain argument' do
         subject { last_response.body }
 
