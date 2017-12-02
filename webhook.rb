@@ -96,7 +96,11 @@ class Command
       ::Net::HTTP.get(uri)
     end
   rescue Timeout::Error => err
-    { error: "timeout on request to #{domain}" }.to_json
+    { error: "timeout on request to #{uri}" }.to_json
+  rescue SocketError => err
+    { error: "#{uri} socket error: #{err}" }.to_json
+  rescue StandardError => err
+    { error: "#{uri} error: #{err}" }.to_json
   end
 
   def ping
@@ -129,7 +133,7 @@ class SlackResponse
   def attachment
     if response
       if JSON.parse(response).keys.include?('error')
-        error("#{domain} has problems!", response)
+        error("problems contacting #{domain}!", response)
       else
         success("#{domain} all good!", response)
       end
@@ -144,8 +148,8 @@ class SlackResponse
     success_template pretext, text
   end
 
-  def error text
-    failure_template text
+  def error pretext, response
+    error_template pretext, response
   end
 
   def failure text
@@ -163,7 +167,7 @@ class SlackResponse
 
   def error_template(pretext, response)
     {
-      fallback: 'Failure',
+      fallback: 'Error',
       color: 'danger',
       pretext: ':pengiun: Meep meep!',
       fields: present(response)
