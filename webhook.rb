@@ -134,10 +134,12 @@ class SlackResponse
 
   def attachment
     if response
-      if JSON.parse(response).keys.include?('error')
+      if errored?
         error("problems contacting #{domain}!", response)
+      elsif warned?
+        warning("could be problems on #{domain}!", response)
       else
-        success("#{domain} all good!", response)
+        success("#{domain} looks good!", response)
       end
     else
       failure("#{domain} is not well!")
@@ -146,12 +148,26 @@ class SlackResponse
 
   private
 
+  def errored?
+    JSON.parse(response).keys.include?('error')
+  end
+
+  def warned?
+    r = JSON.parse(response)
+    r.values.any? { |el| el.to_s.match?(/\bfalse\b/i) } ||
+      r.values.any? { |el| el.to_s.match?(/\b(?:4[0-9]{2}|5[0-4][0-9]|550)\b/) }
+  end
+
   def success pretext, text
     success_template pretext, text
   end
 
   def error pretext, response
     error_template pretext, response
+  end
+
+  def warning pretext, response
+    warning_template pretext, response
   end
 
   def failure text
@@ -162,6 +178,15 @@ class SlackResponse
     {
       fallback: 'Success',
       color: 'good',
+      pretext: ":penguin: #{pretext}",
+      fields: present(response)
+    }
+  end
+
+  def warning_template(pretext, response)
+    {
+      fallback: 'Warning!',
+      color: 'warning',
       pretext: ":penguin: #{pretext}",
       fields: present(response)
     }
