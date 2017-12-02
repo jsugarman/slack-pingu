@@ -4,6 +4,7 @@ require 'pry'
 require 'net/http'
 require 'nokogiri'
 require 'inflecto'
+require 'timeout'
 
 class Webhook < Sinatra::Base
   get '/' do
@@ -44,11 +45,6 @@ end
 class CommandError < StandardError; end
 
 class Command
-  # USAGES = [
-  #     'pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;',
-  #     'pingu healthcheck &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;'
-  # ].map { |usage| "`#{usage}`" }.freeze
-
   attr_reader :command
 
   def initialize command
@@ -96,7 +92,11 @@ class Command
 
   def request url
     uri = URI(url)
-    ::Net::HTTP.get(uri)
+    Timeout::timeout(5) do
+      ::Net::HTTP.get(uri)
+    end
+  rescue Timeout::Error => err
+    { error: "timeout on request to #{domain}" }.to_json
   end
 
   def ping
@@ -128,7 +128,11 @@ class SlackResponse
 
   def attachment
     if response
-      success("#{domain} all good!", response)
+      if JSON.parse(response).keys.include?('error')
+        error("#{domain} has problems!", response)
+      else
+        success("#{domain} all good!", response)
+      end
     else
       failure("#{domain} is not well!")
     end
@@ -140,6 +144,10 @@ class SlackResponse
     success_template pretext, text
   end
 
+  def error text
+    failure_template text
+  end
+
   def failure text
     failure_template text
   end
@@ -149,6 +157,15 @@ class SlackResponse
       fallback: 'Success',
       color: 'good',
       pretext: ":penguin: #{pretext}",
+      fields: present(response)
+    }
+  end
+
+  def error_template(pretext, response)
+    {
+      fallback: 'Failure',
+      color: 'danger',
+      pretext: ':pengiun: Meep meep!',
       fields: present(response)
     }
   end
