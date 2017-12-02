@@ -22,7 +22,7 @@ class Webhook < Sinatra::Base
     rescue SecurityError => err
       body error_response(err)
     rescue CommandError => err
-      body error_response(err) #+ error_response(Command.usages)
+      body error_response(err)
     end
   end
 
@@ -103,16 +103,18 @@ class Command
     { error: "#{uri} error: #{err}" }.to_json
   end
 
-  def ping
+  def call path
     domains.each_with_object({}) do |domain, memo|
-      memo[domain.to_sym] = request('https://' + domain + '/ping')
+      memo[domain.to_sym] = request('https://' + domain + "/#{path}")
     end
   end
 
+  def ping
+    call 'ping'
+  end
+
   def healthcheck
-    domains.each_with_object({}) do |domain, memo|
-      memo[domain.to_sym] = request('https://' + domain + '/healthcheck')
-    end
+    call 'healthcheck'
   end
 
   def slack_response responses
@@ -169,7 +171,7 @@ class SlackResponse
     {
       fallback: 'Error',
       color: 'danger',
-      pretext: ':pengiun: Meep meep!',
+      pretext: ':penguin: Meep meep!',
       fields: present(response)
     }
   end
@@ -178,7 +180,7 @@ class SlackResponse
     {
       fallback: 'Failure',
       color: 'danger',
-      pretext: ':pengiun: Meep meep!',
+      pretext: ':penguin: Meep meep!',
       text: text
     }
   end
