@@ -139,13 +139,21 @@ RSpec.configure do |config|
     { checks: { database: true, redis: true } }.to_json
   end
 
-  config.before(:each) do
-    stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/ping(\.json)?/).
-      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-      to_return(status: 200, body: stubbed_ping_response, headers: {})
+  config.before(:each) do |example|
+    unless example.metadata[:no_ping]
+      stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/ping(\.json)?/).
+        with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+        to_return(status: 200, body: stubbed_ping_response, headers: {})
 
-    stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/healthcheck(\.json)?/).
-      with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
-      to_return(status: 200, body: stubbed_healthcheck_response, headers: {})
+      stub_request(:get, /mocked-domain(-.*)?\.dsd\.io\/healthcheck(\.json)?/).
+        with(headers: {'Accept'=>'*/*', 'User-Agent'=>'Ruby'}).
+        to_return(status: 200, body: stubbed_healthcheck_response, headers: {})
+    end
+  end
+
+  config.before(:each, :no_ping) do
+    stub_request(:get, "https://mocked-domain.dsd.io/ping").
+      with(:headers => {'Accept'=>'*/*', 'Accept-Encoding'=>'gzip;q=1.0,deflate;q=0.6,identity;q=0.3', 'User-Agent'=>'Ruby'}).
+      to_return(:status => 404, :body => "not found", :headers => {})
   end
 end

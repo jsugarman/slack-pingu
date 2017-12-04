@@ -10,13 +10,18 @@ GEM
       safe_yaml (~> 1.0.0)
     diff-lcs (1.3)
     hashdiff (0.3.7)
+    httparty (0.13.7)
+      json (~> 1.8)
+      multi_xml (>= 0.5.2)
     inflecto (0.0.2)
+    json (1.8.6)
     json_spec (1.1.5)
       multi_json (~> 1.0)
       rspec (>= 2.0, < 4.0)
     method_source (0.9.0)
     mini_portile2 (2.3.0)
     multi_json (1.12.2)
+    multi_xml (0.6.0)
     mustermann (1.0.1)
     nokogiri (1.8.1)
       mini_portile2 (~> 2.3.0)
@@ -64,6 +69,7 @@ PLATFORMS
 
 DEPENDENCIES
   awesome_print
+  httparty (~> 0.13.7)
   inflecto (~> 0.0.2)
   json_spec (~> 1.1, >= 1.1.5)
   nokogiri

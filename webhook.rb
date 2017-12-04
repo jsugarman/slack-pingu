@@ -1,7 +1,7 @@
 require 'sinatra/base'
 require 'json'
 require 'pry'
-require 'net/http'
+require 'httparty'
 require 'nokogiri'
 require 'inflecto'
 require 'timeout'
@@ -33,7 +33,7 @@ class Webhook < Sinatra::Base
       attachments: [
         {
           fallback: 'Error',
-          pretext: 'Meep meep!',
+          pretext: ':penguin: Meep meep!',
           color: 'danger',
           text: err
         }
@@ -43,6 +43,7 @@ class Webhook < Sinatra::Base
 end
 
 class CommandError < StandardError; end
+class ResponseError < StandardError; end
 
 class Command
   attr_reader :command
@@ -92,13 +93,15 @@ class Command
 
   def request url
     uri = URI(url)
-    Timeout::timeout(5) do
-      ::Net::HTTP.get(uri)
-    end
-  rescue Timeout::Error => err
-    { error: "timeout on request to #{uri}" }.to_json
+    response = HTTParty.get(uri, timeout: 5)
+    raise ResponseError if (400..550).include?(response.code.to_i)
+    response
+  rescue Timeout::Error
+    { error: "#{uri} timeout error: #{err}" }.to_json
   rescue SocketError => err
     { error: "#{uri} socket error: #{err}" }.to_json
+  rescue ResponseError => err
+     { error: "#{uri} unreachable: #{response.code}" }.to_json
   rescue StandardError => err
     { error: "#{uri} error: #{err}" }.to_json
   end
@@ -129,7 +132,7 @@ class SlackResponse
 
   def initialize domain, response
     @domain = domain
-    @response = response
+    @response = response.respond_to?(:body) ? response.body : response
   end
 
   def attachment
@@ -210,8 +213,8 @@ class SlackResponse
     }
   end
 
-  def present json
-    attributes = JSON.parse(json)
+  def present(response)
+    attributes = JSON.parse(response)
     attributes.each_with_object([]) do |(k, v), memo|
       if v.is_a?(Hash)
         memo << present(v.to_json)

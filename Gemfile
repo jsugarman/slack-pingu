@@ -3,6 +3,7 @@ ruby '2.4.2'
 
 gem 'sinatra'
 gem 'puma'
+gem 'httparty', '~> 0.13.7'
 gem 'nokogiri'
 gem 'inflecto', '~> 0.0.2'
 gem 'pry'

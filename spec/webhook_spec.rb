@@ -152,6 +152,23 @@ RSpec.describe Webhook do
           end
         end
       end
+
+      context 'when domain does not respond to ping', :no_ping do
+        subject { last_response.body }
+        let(:domain) { 'mocked-domain.dsd.io' }
+        let(:text) { "pingu ping &lt;#{domain}&gt;" }
+
+        it 'returns a slack error attachment' do
+          is_expected.to be_error_at_attachment 0
+        end
+
+        it 'returns details of error error' do
+          is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fields/0/title")
+          is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/fields/0/value")
+          is_expected.to include_json("\"404\"").at_path("attachments/0/fields/0/value")
+        end
+      end
+
     end
   end
 end
