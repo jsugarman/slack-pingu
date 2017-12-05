@@ -33,8 +33,8 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] enable inviting bot to channel
   - [ ] enable slack reminder calling
   - [ ] move rspec external service stubbing to separate file
-  - [ ] move command class to separate file and spec
-  - [ ] move slack ping response class to separate file and spec
+  - [X] move command class to separate file and spec
+  - [X] move slack ping response class to separate file and spec
   - [ ] move string extension to separate file and spec
   - [X] rename token
   - [ ] send separate response per endpoint call
