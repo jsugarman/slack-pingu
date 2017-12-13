@@ -36,6 +36,8 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] add logging
   - [ ] enable inviting bot to channel
   - [X] enable slack reminder calling
+  - [X] rename repo
+  - [ ] move repo to organization
   - [ ] move rspec external service stubbing to separate file
   - [X] move command class to separate file and spec
   - [X] move slack ping response class to separate file and spec
