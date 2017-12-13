@@ -62,5 +62,13 @@ RSpec.describe Command do
         is_expected.to include_json("\"Say one of the following\"").at_path("text")
       end
     end
+
+    context 'when hi command sent' do
+      let(:text) { 'pingu hi' }
+
+      it 'responds with help text' do
+        is_expected.to include_json("\"Say one of the following\"").at_path("text")
+      end
+    end
   end
 end

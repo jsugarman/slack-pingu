@@ -19,7 +19,7 @@ class Command
       slack_response(ping)
     when command.match?(/pingu\s+healthcheck\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
       slack_response(healthcheck)
-    when command.match?(/pingu\s+help/i)
+    when command.match?(/pingu\s+(help|hi)/i)
       help_response
     else
       raise CommandError, "do not understand the command \"#{command.sub(/pingu\s+/i,'')}\""

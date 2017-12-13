@@ -40,7 +40,7 @@ Any domains specified must have paths for ping and/or healthcheck
 For help:
 
 ```
-pingu help
+pingu [help|hi]
 ```
 
 To call a ping endpoint on an app:
@@ -76,5 +76,7 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] set maximum of 20 domains to be pinged
   - [ ] add rubocop
   - [ ] Change format to table of response for brevity
+  - [ ] error response when response is not JSON
+  - [ ] display warning when http status is error 5XX but response is JSON
   --------------------------------------------------------------
   - [ ] activate for all channels in workspace
