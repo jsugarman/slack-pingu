@@ -5,6 +5,8 @@ require 'pry'
 Dir["#{File.dirname(__FILE__)}/lib/**/*.rb"].each { |f| require f }
 
 class Webhook < Sinatra::Base
+  include AppLogger
+
   get '/' do
     <<~HEREDOC
       Slack webhook for notifying a channel of JSON responses from ping and healthcheck endpoints

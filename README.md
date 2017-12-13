@@ -60,7 +60,7 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [X] happy path spes
   - [ ] unhappy path specs
   - [X] handle timeout on a call to ping/healthcheck
-  - [ ] add logging
+  - [X] add logging
   - [ ] enable inviting bot to channel
   - [X] enable slack reminder calling
   - [X] rename repo
@@ -80,3 +80,4 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] display warning when http status is error 5XX but response is JSON
   --------------------------------------------------------------
   - [ ] activate for all channels in workspace
+
