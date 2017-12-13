@@ -3,10 +3,14 @@
 This bot has been integrated into the MoJ Digital & Technology Slack workspace
 as an outgoing webhook.
 
-Currently it is only activated for the #pingutest channel.
+Currently it is only activated for the #cccd_development channel.
+
+**SETUP your own**
+
 
 
 **USAGE**
+
 Once activated for all channels typing the following into slack will
 issue the callback to the webhook, resulting in response being sent
 to the channel.
@@ -31,7 +35,7 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [X] handle timeout on a call to ping/healthcheck
   - [ ] add logging
   - [ ] enable inviting bot to channel
-  - [ ] enable slack reminder calling
+  - [X] enable slack reminder calling
   - [ ] move rspec external service stubbing to separate file
   - [X] move command class to separate file and spec
   - [X] move slack ping response class to separate file and spec
