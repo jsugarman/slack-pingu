@@ -6,8 +6,6 @@ class CommandError < StandardError; end
 class ResponseError < StandardError; end
 
 class Command
-  include AppLogger
-
   attr_reader :command
 
   def initialize command
@@ -15,7 +13,7 @@ class Command
   end
 
   def response
-    logger.info "Interpreting #{command}" unless ENV.fetch('RACK_ENV',nil) == 'test'
+    puts "Interpreting #{command}" unless ENV.fetch('RACK_ENV',nil) == 'test'
     case
     when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
       slack_response(ping)
