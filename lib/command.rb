@@ -22,7 +22,7 @@ class Command
     when command.match?(/pingu\s+(help|hi)/i)
       help_response
     else
-      raise CommandError, "do not understand the command \"#{command.sub(/pingu\s+/i,'')}\""
+      raise CommandError.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
     end
   end
 
@@ -67,6 +67,7 @@ class Command
   end
 
   def call path
+    raise CommandError.new('too many domains!') if domains.size > 10
     domains.each_with_object({}) do |domain, memo|
       memo[domain.to_sym] = request('https://' + domain + "/#{path}")
     end

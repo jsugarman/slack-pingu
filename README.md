@@ -73,7 +73,7 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] send separate response per endpoint call
   - [ ] send mutiple responses as soon as received??
   - [ ] handle ping to domains that do not respond to ping or do not return JSON
-  - [ ] set maximum of 20 domains to be pinged
+  - [X] set maximum of 10 domains to be pinged
   - [ ] add rubocop
   - [ ] Change format to table of response for brevity
   - [ ] error response when response is not JSON
