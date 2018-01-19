@@ -162,10 +162,27 @@ RSpec.describe Webhook do
           is_expected.to be_error_at_attachment 0
         end
 
-        it 'returns details of error error' do
+        it 'returns details of error' do
           is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fields/0/title")
           is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/fields/0/value")
           is_expected.to include_json("\"404\"").at_path("attachments/0/fields/0/value")
+        end
+      end
+
+
+      context 'when sent too many domains' do
+        subject { last_response.body }
+        let(:domains) { 11.times.with_object([]) { |i,memo| memo << "mocked-domain-#{i+1}.dsd.io" }.join(',') }
+        let(:text) { "pingu ping &lt;#{domains}&gt;" }
+
+        it 'returns a slack error attachment' do
+          is_expected.to be_error_at_attachment 0
+        end
+
+        it 'returns details of error' do
+          ap last_response.body
+          is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fallback")
+          is_expected.to be_json_eql("\"too many domains!\"").at_path("attachments/0/text")
         end
       end
 

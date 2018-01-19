@@ -70,5 +70,13 @@ RSpec.describe Command do
         is_expected.to include_json("\"Say one of the following\"").at_path("text")
       end
     end
+
+    context 'when too many domains provided' do
+      domains = 11.times.with_object([]) { |i,memo| memo << "mocked-domain-#{i+1}.dsd.io" }.join(',')
+      let(:text) { "pingu ping &lt;#{domains}&gt;" }
+      it 'raise an error if number of domains exceeds configured limit' do
+        expect { subject }.to raise_error CommandError, 'too many domains!'
+      end
+    end
   end
 end
