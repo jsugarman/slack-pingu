@@ -3,18 +3,25 @@
 # Check https://circleci.com/docs/2.0/language-ruby/ for more details
 #
 version: 2
+
+executors:
+  ruby-2.5.3:
+    docker:
+      - image: circleci/ruby:2.5.3-node-browsers
+
 references:
   build-container: &build-container
-    docker:
-    - image: circleci/ruby:2.5.3-node-browsers
+    working_directory: ~/repo
+    executor: ruby-2.5.3
 
-  working_directory: ~/repo
-
-  build-app: &build-app
+  checkout-app: &checkout-app
     <<: *build-container
     steps:
       - checkout
 
+  build-app: &build-app
+    <<: *checkout-app
+    steps:
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -37,7 +44,22 @@ jobs:
   build:
     <<: *build-app
 
+  brakeman:
+    <<: *checkout-app
+    steps:
+      - run:
+          name: run brakeman
+          command: echo 'running brakeman'
+
+  rubocop:
+    <<: *checkout-app
+    steps:
+      - run:
+          name: run rubocop
+          command: echo 'running rubocop'
+
   rspec:
+    <<: *build-app
     steps:
       - run:
           name: run tests
@@ -58,29 +80,17 @@ jobs:
           path: /tmp/test-results
           destination: test-results
 
-  brakeman:
-    steps:
-      - run:
-          name: run brakeman
-          command: echo 'running brakeman'
-
-  rubocop:
-      steps:
-        - run:
-            name: run rubocop
-            command: echo 'running rubocop'
-
 workflows:
   version: 2
   build_and_test:
     jobs:
       - build
-      - rspec:
-          requires:
-            - build
       - brakeman:
           requires:
             - build
       - rubocop:
+          requires:
+            - build
+      - rspec:
           requires:
             - build
