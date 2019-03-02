@@ -4,24 +4,15 @@
 #
 version: 2
 
-executors:
-  ruby-2.5.3:
+aliases:
+  _defaults: &defaults
+    working_directory: &working_directory ~/repo
     docker:
       - image: circleci/ruby:2.5.3-node-browsers
-
-references:
-  build-container: &build-container
-    working_directory: ~/repo
-    executor: ruby-2.5.3
-
-  checkout-app: &checkout-app
-    <<: *build-container
+  _install-dependencies-steps: &install-dependencies-steps
     steps:
       - checkout
 
-  build-app: &build-app
-    <<: *checkout-app
-    steps:
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -36,31 +27,35 @@ references:
             bundle _1.16.2_ install --jobs=4 --retry=3 --path vendor/bundle
 
       - save_cache:
+          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
           paths:
             - ./vendor/bundle
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
 
 jobs:
   build:
-    <<: *build-app
+    <<: *defaults
+    <<: *install-dependencies-steps
 
   brakeman:
-    <<: *checkout-app
-    steps:
+    <<: *defaults
+    <<: *install-dependencies-steps
+    steps+:
       - run:
           name: run brakeman
           command: echo 'running brakeman'
 
   rubocop:
-    <<: *checkout-app
-    steps:
+    <<: *defaults
+    <<: *install-dependencies-steps
+    steps+:
       - run:
           name: run rubocop
           command: echo 'running rubocop'
 
   rspec:
-    <<: *build-app
-    steps:
+    <<: *defaults
+    <<: *install-dependencies-steps
+    steps+:
       - run:
           name: run tests
           command: |
