@@ -1,5 +1,5 @@
 source 'http://rubygems.org'
-ruby '2.4.2'
+ruby '2.5.0'
 
 gem 'sinatra'
 gem 'puma'
@@ -18,4 +18,5 @@ end
 group :development, :test do
   gem 'awesome_print'
   gem 'pry-byebug'
+  gem 'rb-readline'
 end

@@ -180,7 +180,6 @@ RSpec.describe Webhook do
         end
 
         it 'returns details of error' do
-          ap last_response.body
           is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fallback")
           is_expected.to be_json_eql("\"too many domains!\"").at_path("attachments/0/text")
         end

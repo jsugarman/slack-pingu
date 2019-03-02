@@ -38,6 +38,7 @@ GEM
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
+    rb-readline (0.5.5)
     rspec (3.7.0)
       rspec-core (~> 3.7.0)
       rspec-expectations (~> 3.7.0)
@@ -77,12 +78,13 @@ DEPENDENCIES
   pry-byebug
   puma
   rack-test (~> 0.6.3)
+  rb-readline
   ruby_ttt (~> 0.4.9)
   sinatra
   webmock (~> 2.1)
 
 RUBY VERSION
-   ruby 2.4.2p198
+   ruby 2.5.0p0
 
 BUNDLED WITH
-   1.16.0
+   1.16.2
