@@ -81,7 +81,7 @@ class Command
     call 'healthcheck'
   end
 
-  def slack_response responses
+  def slack_response(responses)
     {
       attachments: responses.map { |k, v| SlackResponse.new(k, v).attachment }
     }.to_json

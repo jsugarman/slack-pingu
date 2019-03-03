@@ -47,12 +47,12 @@ RSpec.describe Command do
 
     context 'when ping command sent' do
       let(:text) { 'pingu ping &lt;mocked-domain.dsd.io&gt;' }
-      it { is_expected.to be_success_at_attachment 0 }
+      it { is_expected.to be_success_at_attachment }
     end
 
     context 'when healthcheck command sent' do
       let(:text) { 'pingu healthcheck &lt;mocked-domain.dsd.io&gt;' }
-      it { is_expected.to be_success_at_attachment 0 }
+      it { is_expected.to be_success_at_attachment }
     end
 
     context 'when help command sent' do
