@@ -4,7 +4,6 @@ RSpec.describe Webhook do
   it { is_expected.to be_kind_of Sinatra::Wrapper }
 
   context 'controller' do
-
     describe 'GET /' do
       before { get '/' }
 
@@ -51,26 +50,26 @@ RSpec.describe Webhook do
         context 'body' do
           subject { last_response.body }
 
-          let(:custom_slack_error) do
-            {
-              attachments: [
-                {
-                  fallback: 'Error',
-                  pretext: 'Meep meep!',
-                  color: 'danger',
-                  text: 'test'
-                }
-              ]
-            }.to_json
-          end
+          # let(:custom_slack_error) do
+          #   {
+          #     attachments: [
+          #       {
+          #         fallback: 'Error',
+          #         pretext: 'Seep meep!',
+          #         color: 'danger',
+          #         text: 'test'
+          #       }
+          #     ]
+          #   }.to_json
+          # end
 
           it 'returns slack attachment' do
             is_expected.to have_json_size(1).at_path('attachments')
           end
 
           it 'returns slack error attachment' do
-            is_expected.to be_error_at_attachment 0
-            is_expected.to include_json("\"test\"").at_path("attachments/0/text")
+            is_expected.to be_error_at_attachment
+            is_expected.to include_json('"test"').at_path('attachments/0/text')
           end
         end
       end
@@ -83,16 +82,16 @@ RSpec.describe Webhook do
 
         context 'body' do
           it 'contains slack formatted success message' do
-            is_expected.to be_success_at_attachment 0
+            is_expected.to be_success_at_attachment
           end
 
           it 'contains domain name pinged' do
-            is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/pretext")
+            is_expected.to include_json('"mocked-domain.dsd.io"').at_path('attachments/0/pretext')
           end
 
           it 'contains humanized text representing ping response' do
-            is_expected.to be_json_eql("\"Build version\"").at_path("attachments/0/fields/0/title")
-            is_expected.to be_json_eql("\"1.0\"").at_path("attachments/0/fields/0/value")
+            is_expected.to be_json_eql('"Build version"').at_path('attachments/0/fields/0/title')
+            is_expected.to be_json_eql('"1.0"').at_path('attachments/0/fields/0/value')
           end
         end
       end
@@ -107,21 +106,21 @@ RSpec.describe Webhook do
 
           it 'returns a slack attachment for each domain seperated by commas' do
             is_expected.to have_json_size(2).at_path('attachments')
-            is_expected.to be_success_at_attachment 0
-            is_expected.to be_success_at_attachment 1
+            is_expected.to be_success_at_attachment(index: 0)
+            is_expected.to be_success_at_attachment(index: 1)
           end
         end
 
         context 'separated by whitespace and commas' do
           context 'space,space' do
-            let(:text) { "pingu ping &lt;#{domains.join('  ,  ')}&gt;" }
+            let(:text) { "pingu ping &lt;#{domains.join(' , ')}&gt;" }
             it 'returns a slack attachment for each domain seperated by commas with whitespace' do
               is_expected.to have_json_size(2).at_path('attachments')
             end
           end
 
           context ',space' do
-            let(:text) { "pingu ping &lt;#{domains.join(',  ')}&gt;" }
+            let(:text) { "pingu ping &lt;#{domains.join(', ')}&gt;" }
             it 'returns a slack attachment for each domain seperated by commas with whitespace' do
               is_expected.to have_json_size(2).at_path('attachments')
             end
@@ -137,18 +136,18 @@ RSpec.describe Webhook do
 
         context 'body' do
           it 'contains slack formatted success message' do
-            is_expected.to be_success_at_attachment 0
+            is_expected.to be_success_at_attachment
           end
 
           it 'contains domain name healtchecked' do
-            is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/pretext")
+            is_expected.to include_json('"mocked-domain.dsd.io"').at_path('attachments/0/pretext')
           end
 
           it 'contains humanized text representing healthcheck response' do
-            is_expected.to be_json_eql("\"Database\"").at_path("attachments/0/fields/0/title")
-            is_expected.to be_json_eql("\"true\"").at_path("attachments/0/fields/0/value")
-            is_expected.to be_json_eql("\"Redis\"").at_path("attachments/0/fields/1/title")
-            is_expected.to be_json_eql("\"true\"").at_path("attachments/0/fields/1/value")
+            is_expected.to be_json_eql('"Database"').at_path('attachments/0/fields/0/title')
+            is_expected.to be_json_eql('"true"').at_path('attachments/0/fields/0/value')
+            is_expected.to be_json_eql('"Redis"').at_path('attachments/0/fields/1/title')
+            is_expected.to be_json_eql('"true"').at_path('attachments/0/fields/1/value')
           end
         end
       end
@@ -159,32 +158,30 @@ RSpec.describe Webhook do
         let(:text) { "pingu ping &lt;#{domain}&gt;" }
 
         it 'returns a slack error attachment' do
-          is_expected.to be_error_at_attachment 0
+          is_expected.to be_error_at_attachment(pretext: "problems contacting #{domain}!")
         end
 
         it 'returns details of error' do
-          is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fields/0/title")
-          is_expected.to include_json("\"mocked-domain.dsd.io\"").at_path("attachments/0/fields/0/value")
-          is_expected.to include_json("\"404\"").at_path("attachments/0/fields/0/value")
+          is_expected.to be_json_eql('"Error"').at_path('attachments/0/fields/0/title')
+          is_expected.to include_json('"mocked-domain.dsd.io"').at_path('attachments/0/fields/0/value')
+          is_expected.to include_json('"404"').at_path('attachments/0/fields/0/value')
         end
       end
-
 
       context 'when sent too many domains' do
         subject { last_response.body }
-        let(:domains) { 11.times.with_object([]) { |i,memo| memo << "mocked-domain-#{i+1}.dsd.io" }.join(',') }
+        let(:domains) { 11.times.with_object([]) { |i, memo| memo << "mocked-domain-#{i + 1}.dsd.io" }.join(',') }
         let(:text) { "pingu ping &lt;#{domains}&gt;" }
 
         it 'returns a slack error attachment' do
-          is_expected.to be_error_at_attachment 0
+          is_expected.to be_error_at_attachment
         end
 
         it 'returns details of error' do
-          is_expected.to be_json_eql("\"Error\"").at_path("attachments/0/fallback")
-          is_expected.to be_json_eql("\"too many domains!\"").at_path("attachments/0/text")
+          is_expected.to be_json_eql('"Error"').at_path('attachments/0/fallback')
+          is_expected.to be_json_eql('"too many domains!"').at_path('attachments/0/text')
         end
       end
-
     end
   end
 end

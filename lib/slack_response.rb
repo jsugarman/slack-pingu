@@ -8,13 +8,9 @@ class SlackResponse
 
   def attachment
     if response
-      if errored?
-        error("problems contacting #{domain}!", response)
-      elsif warned?
-        warning("could be problems on #{domain}!", response)
-      else
-        success("#{domain} looks good!", response)
-      end
+      return error("problems contacting #{domain}!", response) if errored?
+      return warning("could be problems on #{domain}!", response) if warned?
+      success("#{domain} looks good!", response)
     else
       failure("#{domain} is not well!")
     end
@@ -23,7 +19,7 @@ class SlackResponse
   private
 
   def errored?
-    JSON.parse(response).keys.include?('error')
+    JSON.parse(response).key?('error')
   end
 
   def warned?
@@ -32,27 +28,27 @@ class SlackResponse
       r.values.any? { |el| el.to_s.match?(/\b(?:4[0-9]{2}|5[0-4][0-9]|550)\b/) }
   end
 
-  def success pretext, text
-    success_template pretext, text
+  def success(pretext, text)
+    success_template(pretext, text)
   end
 
-  def error pretext, response
-    error_template pretext, response
+  def error(pretext, response)
+    error_template(pretext, response)
   end
 
-  def warning pretext, response
-    warning_template pretext, response
+  def warning(pretext, response)
+    warning_template(pretext, response)
   end
 
-  def failure text
-    failure_template text
+  def failure(text)
+    failure_template(text)
   end
 
   def success_template(pretext, response)
     {
       fallback: 'Success',
       color: 'good',
-      pretext: ":penguin: #{pretext}",
+      pretext: ":penguin: Woohoo! #{pretext}",
       fields: present(response)
     }
   end
@@ -61,7 +57,7 @@ class SlackResponse
     {
       fallback: 'Warning!',
       color: 'warning',
-      pretext: ":penguin: #{pretext}",
+      pretext: ":penguin: Meep! #{pretext}",
       fields: present(response)
     }
   end
@@ -70,7 +66,7 @@ class SlackResponse
     {
       fallback: 'Error',
       color: 'danger',
-      pretext: ':penguin: Meep meep!',
+      pretext: ":penguin: Meep meep! #{pretext}",
       fields: present(response)
     }
   end
