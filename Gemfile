@@ -19,4 +19,5 @@ group :development, :test do
   gem 'awesome_print'
   gem 'pry-byebug'
   gem 'rb-readline'
+  gem 'rubocop', '~> 0.50', '< 0.66'
 end

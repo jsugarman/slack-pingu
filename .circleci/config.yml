@@ -9,66 +9,71 @@ aliases:
     working_directory: &working_directory ~/repo
     docker:
       - image: circleci/ruby:2.5.3-node-browsers
-  _install-dependencies-steps: &install-dependencies-steps
-    steps:
-      - checkout
 
-      # Download and cache dependencies
-      - restore_cache:
-          keys:
-            - v1-dependencies-{{ checksum "Gemfile.lock" }}
-            # fallback to using the latest cache if no exact match is found
-            - v1-dependencies-
+  _restore-cache: &restore-cache
+    restore_cache:
+      keys:
+        - v1-dependencies-{{ checksum "Gemfile.lock" }}
+        # fallback to using the latest cache if no exact match is found
+        - v1-dependencies-
 
-      - run:
-          name: install dependencies
-          command: |
-            gem install bundler -v 1.16.2
-            bundle _1.16.2_ install --jobs=4 --retry=3 --path vendor/bundle
+  _install-dependencies: &install-dependencies
+    run:
+      name: install dependencies
+      command: |
+        gem install bundler -v 1.16.2
+        bundle _1.16.2_ install --jobs=4 --retry=3 --path vendor/bundle
 
-      - save_cache:
-          key: v1-dependencies-{{ checksum "Gemfile.lock" }}
-          paths:
-            - ./vendor/bundle
+  _save-cache: &save-cache
+    save_cache:
+      key: v1-dependencies-{{ checksum "Gemfile.lock" }}
+      paths:
+        - ./vendor/bundle
+
+  _rubocop: &rubocop
+    run:
+      name: Rubocop
+      command: bundle exec rubocop
+
+  _rspec: &rspec
+    run:
+      name: RSpec
+      command: |
+        mkdir /tmp/test-results
+        TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
+          circleci tests split --split-by=timings)"
+
+        bundle exec rspec \
+          --format progress \
+          --out /tmp/test-results/rspec.xml \
+          $TEST_FILES
 
 jobs:
   build:
     <<: *defaults
-    <<: *install-dependencies-steps
-
-  brakeman:
-    <<: *defaults
-    <<: *install-dependencies-steps
-    steps+:
-      - run:
-          name: run brakeman
-          command: echo 'running brakeman'
+    steps:
+      - checkout
+      - *restore-cache
+      - *install-dependencies
+      - *save-cache
 
   rubocop:
     <<: *defaults
-    <<: *install-dependencies-steps
-    steps+:
-      - run:
-          name: run rubocop
-          command: echo 'running rubocop'
+    steps:
+      - checkout
+      - *restore-cache
+      - *install-dependencies
+      - *save-cache
+      - *rubocop
 
   rspec:
     <<: *defaults
-    <<: *install-dependencies-steps
-    steps+:
-      - run:
-          name: run tests
-          command: |
-            mkdir /tmp/test-results
-            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
-              circleci tests split --split-by=timings)"
-
-            bundle exec rspec \
-              --format progress \
-              --out /tmp/test-results/rspec.xml \
-              $TEST_FILES
-
-      # collect reports
+    steps:
+      - checkout
+      - *restore-cache
+      - *install-dependencies
+      - *save-cache
+      - *rspec
       - store_test_results:
           path: /tmp/test-results
       - store_artifacts:
@@ -80,9 +85,6 @@ workflows:
   build_and_test:
     jobs:
       - build
-      - brakeman:
-          requires:
-            - build
       - rubocop:
           requires:
             - build
