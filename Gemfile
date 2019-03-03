@@ -1,7 +1,7 @@
 source 'http://rubygems.org'
 ruby '2.5.3'
 
-gem 'sinatra'
+gem 'sinatra', '>= 2.0.2'
 gem 'puma'
 gem 'httparty', '~> 0.13.7'
 gem 'nokogiri'
