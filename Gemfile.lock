@@ -24,7 +24,7 @@ GEM
     mini_portile2 (2.3.0)
     multi_json (1.12.2)
     multi_xml (0.6.0)
-    mustermann (1.0.1)
+    mustermann (1.0.3)
     nokogiri (1.8.1)
       mini_portile2 (~> 2.3.0)
     parallel (1.14.0)
@@ -41,7 +41,7 @@ GEM
     public_suffix (3.0.1)
     puma (3.10.0)
     rack (2.0.3)
-    rack-protection (2.0.0)
+    rack-protection (2.0.5)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -72,12 +72,12 @@ GEM
     ruby-progressbar (1.10.0)
     ruby_ttt (0.4.9)
     safe_yaml (1.0.4)
-    sinatra (2.0.0)
+    sinatra (2.0.5)
       mustermann (~> 1.0)
       rack (~> 2.0)
-      rack-protection (= 2.0.0)
+      rack-protection (= 2.0.5)
       tilt (~> 2.0)
-    tilt (2.0.8)
+    tilt (2.0.9)
     unicode-display_width (1.4.1)
     webmock (2.3.2)
       addressable (>= 2.3.6)
@@ -100,7 +100,7 @@ DEPENDENCIES
   rb-readline
   rubocop (~> 0.50, < 0.66)
   ruby_ttt (~> 0.4.9)
-  sinatra
+  sinatra (>= 2.0.2)
   webmock (~> 2.1)
 
 RUBY VERSION
