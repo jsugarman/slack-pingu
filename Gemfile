@@ -2,12 +2,13 @@ source 'http://rubygems.org'
 ruby '2.5.3'
 
 gem 'sinatra', '>= 2.0.2'
-gem 'rack', '>= 2.0.6'
-gem 'puma'
+
 gem 'httparty', '~> 0.13.7'
-gem 'nokogiri'
 gem 'inflecto', '~> 0.0.2'
+gem 'nokogiri', '>= 1.8.5'
 gem 'pry'
+gem 'puma'
+gem 'rack', '>= 2.0.6'
 
 group :test do
   gem 'ruby_ttt', '~> 0.4.9'
