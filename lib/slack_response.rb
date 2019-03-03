@@ -1,7 +1,14 @@
+# frozen_string_literal: true
+
+# Slack response objects:
+# constructs an appropriate slack message "attachment"
+# based on the response to the ping or healthcheck
+# endpoint
+#
 class SlackResponse
   attr_reader :domain, :response
 
-  def initialize domain, response
+  def initialize(domain, response)
     @domain = domain
     @response = response.respond_to?(:body) ? response.body : response
   end
