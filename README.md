@@ -1,3 +1,6 @@
+[![CircleCI](https://circleci.com/gh/jsugarman/slack-pingu/tree/master.svg?style=svg)](https://circleci.com/gh/jsugarman/slack-pingu/tree/master)
+[![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
+
 Slack webhook/bot for notifying a channel of JSON responses from ping and healthcheck endpoints
 for one or more supplied domains. It is hosted on heroku [here](https://slack-pingu.herokuapp.com/)
 
@@ -74,10 +77,14 @@ pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
   - [ ] send mutiple responses as soon as received??
   - [ ] handle ping to domains that do not respond to ping or do not return JSON
   - [X] set maximum of 10 domains to be pinged
-  - [ ] add rubocop
+  - [X] add rubocop
   - [ ] Change format to table of response for brevity
   - [ ] error response when response is not JSON
   - [ ] display warning when http status is error 5XX but response is JSON
+  - [X] add circleCI
+  - [ ] add brakeman or other static security analyser
+  - [ ] add codeclimate and upload artifacts using circleCI
+  - [X] add badges
   --------------------------------------------------------------
   - [ ] activate for all channels in workspace
 
