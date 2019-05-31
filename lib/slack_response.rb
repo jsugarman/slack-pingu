@@ -35,8 +35,8 @@ class SlackResponse
       r.values.any? { |el| el.to_s.match?(/\b(?:4[0-9]{2}|5[0-4][0-9]|550)\b/) }
   end
 
-  def success(pretext, text)
-    success_template(pretext, text)
+  def success(pretext, response)
+    success_template(pretext, response)
   end
 
   def error(pretext, response)
