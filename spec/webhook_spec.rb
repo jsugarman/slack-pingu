@@ -23,7 +23,7 @@ RSpec.describe Webhook do
 
       before do |example|
         allow(ENV).to receive(:fetch).and_call_original
-        expect(ENV).to receive(:fetch).with('SLACK_API_TOKEN').and_return token
+        expect(ENV).to receive(:fetch).with('SLACK_API_TOKEN', nil).and_return token
         post '/webhook', params unless example.metadata[:skip_post]
       end
 

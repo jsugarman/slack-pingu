@@ -14,7 +14,7 @@ class Webhook < Sinatra::Base
   post '/webhook' do
     content_type 'application/json'
     begin
-      raise SecurityError, 'Please check the value of `SLACK_API_TOKEN` in env matches that in slack outgoing webhook integration' unless (ENV.fetch('SLACK_API_TOKEN') || !params[:token].nil? && params[:token].eql?(ENV.fetch('WEBHOOK_TOKEN')))
+      authenticate
       command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
@@ -25,6 +25,15 @@ class Webhook < Sinatra::Base
   end
 
   private
+
+  def token
+    @token ||= ENV.fetch('SLACK_API_TOKEN', nil)
+  end
+
+  def authenticate
+    return if token && params[:token].eql?(token)
+    raise SecurityError, 'Please check the value of `SLACK_API_TOKEN` in env matches that in slack outgoing webhook integration'
+  end
 
   def error_response err
     {
