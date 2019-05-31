@@ -27,6 +27,25 @@ RSpec.describe Webhook do
         post '/webhook', params unless example.metadata[:skip_post]
       end
 
+      context 'when sent an invalid token' do
+        let(:domain) { 'mocked-domain.dsd.io' }
+        let(:text) { "pingu ping &lt;#{domain}&gt;" }
+        let(:params) { { token: 'invalid_token', text: text } }
+
+        context 'body' do
+          subject { last_response.body }
+
+          it 'returns slack attachment' do
+            is_expected.to have_json_size(1).at_path('attachments')
+          end
+
+          it 'returns slack error attachment' do
+            is_expected.to be_error_at_attachment
+            is_expected.to include_json('"check the value of `SLACK_API_TOKEN`"').at_path('attachments/0/text')
+          end
+        end
+      end
+
       context 'when sent an invalid command' do
         let(:text) { 'pingu test' }
 
@@ -49,19 +68,6 @@ RSpec.describe Webhook do
 
         context 'body' do
           subject { last_response.body }
-
-          # let(:custom_slack_error) do
-          #   {
-          #     attachments: [
-          #       {
-          #         fallback: 'Error',
-          #         pretext: 'Seep meep!',
-          #         color: 'danger',
-          #         text: 'test'
-          #       }
-          #     ]
-          #   }.to_json
-          # end
 
           it 'returns slack attachment' do
             is_expected.to have_json_size(1).at_path('attachments')
