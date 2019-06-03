@@ -45,8 +45,10 @@ aliases:
 
         bundle exec rspec \
           --format progress \
+          --format RspecJunitFormatter \
           --out /tmp/test-results/rspec.xml \
           $TEST_FILES
+      when: always
 
 jobs:
   build:

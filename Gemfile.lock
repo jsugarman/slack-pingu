@@ -60,6 +60,8 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.7.0)
     rspec-support (3.7.0)
+    rspec_junit_formatter (0.4.1)
+      rspec-core (>= 2, < 4, != 2.12.0)
     rubocop (0.65.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
@@ -99,6 +101,7 @@ DEPENDENCIES
   rack (>= 2.0.6)
   rack-test (~> 0.6.3)
   rb-readline
+  rspec_junit_formatter
   rubocop (~> 0.50, < 0.66)
   ruby_ttt (~> 0.4.9)
   sinatra (>= 2.0.2)
@@ -108,4 +111,4 @@ RUBY VERSION
    ruby 2.5.3p105
 
 BUNDLED WITH
-   1.16.6
+   1.17.3
