@@ -1,5 +1,9 @@
 Layout/EmptyLineAfterGuardClause:
   Enabled: false
 
+# disable for rspec blocks
+Metrics/BlockLength:
+  ExcludedMethods: ['describe', 'context']
+
 inherit_from: .rubocop_todo.yml
 
