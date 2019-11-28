@@ -7,6 +7,7 @@ gem 'httparty', '~> 0.13.7'
 gem 'inflecto', '~> 0.0.2'
 gem 'nokogiri', '>= 1.8.5'
 gem 'pry'
+gem 'awesome_print'
 gem 'puma'
 gem 'rack', '>= 2.0.6'
 
@@ -19,7 +20,6 @@ group :test do
 end
 
 group :development, :test do
-  gem 'awesome_print'
   gem 'pry-byebug'
   gem 'rb-readline'
   gem 'rubocop', '~> 0.50', '< 0.66'
