@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'json'
 require 'pry'
+require 'awesome_print'
 
 Dir["#{File.dirname(__FILE__)}/lib/**/*.rb"].each { |f| require f }
 
@@ -15,6 +16,9 @@ class Webhook < Sinatra::Base
     content_type 'application/json'
     begin
       authenticate
+      ap '--------------'
+      ap params
+      ap '--------------'
       command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
