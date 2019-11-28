@@ -2,7 +2,7 @@ RSpec.describe Command do
   subject { described_class.new(text) }
   let(:text) { 'pingu help' }
 
-  it 'returns as command object' do
+  it 'returns a command object' do
     is_expected.to be_an_instance_of Command
   end
 

@@ -1,36 +1,48 @@
 require 'nokogiri'
 require 'httparty'
 require 'timeout'
+require 'command_parser'
 
 class CommandError < StandardError; end
 class ResponseError < StandardError; end
 
 class Command
   attr_reader :command
+  attr_reader :hostnames
 
-  def initialize command
-    @command = strip_html(command)
+  def initialize(text)
+    parser = CommandParser.new(text)
+    @command = parser.command
+    @hostnames = parser.hostnames
   end
 
   def response
-    puts "Interpreting #{command}" #unless ENV.fetch('RACK_ENV',nil) == 'test'
-    case
-    when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
+    puts "Interpreting #{command}" # unless ENV.fetch('RACK_ENV',nil) == 'test'
+
+    case command
+    when 'ping'
       slack_response(ping)
-    when command.match?(/pingu\s+healthcheck\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
+    when 'healthcheck'
       slack_response(healthcheck)
-    when command.match?(/pingu\s+(help|hi)/i)
+    when 'help'
       help_response
     else
       raise CommandError.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
     end
+
+    # case
+    # when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
+    #   slack_response(ping)
+    # when command.match?(/pingu\s+healthcheck\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
+    #   slack_response(healthcheck)
+    # when command.match?(/pingu\s+(help|hi)/i)
+    #   help_response
+    # else
+    #   raise CommandError.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
+    # end
   end
 
   private
-
-  def strip_html(html)
-    Nokogiri::HTML(html).content
-  end
 
   def usages
     <<~EOT
@@ -44,11 +56,12 @@ class Command
   end
 
   def domains
-    @domains ||= command.
-      match(/(pingu\s+)((?:ping|healthcheck)\s+)(<[^>]*>)(.*)/i).
-      captures[2].
-      tr('<>','').
-      split(/[\s*,\s*]+/)
+    @hostnames
+    # @domains ||= command.
+    #   match(/(pingu\s+)((?:ping|healthcheck)\s+)(<[^>]*>)(.*)/i).
+    #   captures[2].
+    #   tr('<>','').
+    #   split(/[\s*,\s*]+/)
   end
 
   def request url
