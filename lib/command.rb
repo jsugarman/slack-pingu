@@ -3,17 +3,16 @@ require 'httparty'
 require 'timeout'
 require 'command_parser'
 
-class CommandError < StandardError; end
-class ResponseError < StandardError; end
-
 class Command
-  attr_reader :command
-  attr_reader :hostnames
+  class InvalidCommand < StandardError; end
+  class TooManyDomains < StandardError; end
+  class ResponseError < StandardError; end
+
+  extend Forwardable
+  def_delegators :@parser, :command, :hostnames
 
   def initialize(text)
-    parser = CommandParser.new(text)
-    @command = parser.command
-    @hostnames = parser.hostnames
+    @parser = CommandParser.new(text)
   end
 
   def response
@@ -24,10 +23,10 @@ class Command
       slack_response(ping)
     when 'healthcheck'
       slack_response(healthcheck)
-    when 'help'
+    when 'help', 'hi'
       help_response
     else
-      raise CommandError.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
+      raise InvalidCommand.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
     end
 
     # case
@@ -55,14 +54,13 @@ class Command
     { text: "Say one of the following:#{usages}" }.to_json
   end
 
-  def domains
-    @hostnames
+  # def domains
     # @domains ||= command.
     #   match(/(pingu\s+)((?:ping|healthcheck)\s+)(<[^>]*>)(.*)/i).
     #   captures[2].
     #   tr('<>','').
     #   split(/[\s*,\s*]+/)
-  end
+  # end
 
   def request url
     uri = URI(url)
@@ -80,9 +78,9 @@ class Command
   end
 
   def call path
-    raise CommandError.new('too many domains!') if domains.size > 10
-    domains.each_with_object({}) do |domain, memo|
-      memo[domain.to_sym] = request('https://' + domain + "/#{path}")
+    raise TooManyDomains.new('too many domains!') if hostnames.size > 10
+    hostnames.each_with_object({}) do |hostname, memo|
+      memo[hostname.to_sym] = request('https://' + hostname + "/#{path}")
     end
   end
 

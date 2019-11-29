@@ -1,5 +1,5 @@
 class CommandParser
-  class Error < StandardError; end
+  class UnknownCommand < StandardError; end
 
   attr_reader :text
 
@@ -10,7 +10,7 @@ class CommandParser
   def command
     captures[1].strip
   rescue NoMethodError => e
-    raise Error, "unknown command \"#{text}\""
+    raise UnknownCommand, "unknown command \"#{text}\""
   end
 
   def hostnames
@@ -23,13 +23,14 @@ class CommandParser
 
   def captures
     @captures = text.
-                  match(/(pingu\s+)(ping\s*|healthcheck\s*|help\s*)(.*)/i).
+                  match(/(pingu\s+)(ping\s*|healthcheck\s*|help\s*|hi\s*)(.*)/i).
                   captures
   end
 
   def md_to_hostname(markdown_url)
     url = markdown_url.
             sub(/\|.*/,'')&.
+            gsub(/&lt;|&gt;/,'')&.
             tr('<>','')&.
             strip
     URI.parse(url).hostname || url

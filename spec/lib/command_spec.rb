@@ -6,31 +6,28 @@ RSpec.describe Command do
     is_expected.to be_an_instance_of Command
   end
 
-  it 'assigns command text to instance variable' do
-    expect(subject.instance_variable_get(:@command)).to eql 'pingu help'
-  end
-
-  it 'strips html out of command' do
-    expect_any_instance_of(described_class).to receive(:strip_html).with(text)
-    subject
-  end
-
   it { is_expected.to respond_to :command }
+  it { is_expected.to respond_to :hostnames }
+
+  it 'assigns command text' do
+    expect(subject.command).to eql 'help'
+  end
 
   describe '#command' do
     subject { described_class.new(text).command }
-    let(:text) { 'pingu ping &lt;<a href="https://mocked-domain.dsd.io">mocked-domain.dsd.io</a>&gt;' }
-
-    it 'strips html' do
-      expect(described_class.new('<br><a href="https://mocked-domain.dsd.io">mocked-domain.dsd.io</a></br>').command).to eql 'mocked-domain.dsd.io'
-    end
-
-    it 'decodes slack encodings' do
-      expect(described_class.new('&lt;Tom &amp; Jerry&gt;').command).to eql '<Tom & Jerry>'
-    end
+    let(:text) { 'pingu ping &lt;<http://mocked-domain.dsd.io|mocked-domain.dsd.io>&gt' }
 
     it 'returns command text ready for regex matching' do
-      is_expected.to eql 'pingu ping <mocked-domain.dsd.io>'
+      is_expected.to eql 'ping'
+    end
+  end
+
+  describe '#hostnames' do
+    subject { described_class.new(text).hostnames }
+    let(:text) { 'pingu ping &lt;<http://mocked-domain.dsd.io|mocked-domain.dsd.io>&gt' }
+
+    it 'returns command text ready for regex matching' do
+      is_expected.to match_array(['mocked-domain.dsd.io'])
     end
   end
 
@@ -75,7 +72,7 @@ RSpec.describe Command do
       domains = 11.times.with_object([]) { |i,memo| memo << "mocked-domain-#{i+1}.dsd.io" }.join(',')
       let(:text) { "pingu ping &lt;#{domains}&gt;" }
       it 'raise an error if number of domains exceeds configured limit' do
-        expect { subject }.to raise_error CommandError, 'too many domains!'
+        expect { subject }.to raise_error described_class::TooManyDomains, 'too many domains!'
       end
     end
   end
