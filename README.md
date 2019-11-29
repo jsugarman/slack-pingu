@@ -48,12 +48,12 @@ pingu [help|hi]
 
 To call a ping endpoint on an app:
 ```
-pingu ping <domain-name[,domain-name-1][,domain-name-2]>
+pingu ping domain-name[, domain-name-1][, domain-name-2]
 ```
 
 To call a healthcheck endpoint on an app:
 ```
-pingu healthcheck <domain-name[,domain-name-1][,domain-name-2]>
+pingu healthcheck domain-name[, domain-name-1][, domain-name-2]
 ```
 
 **TODO**
