@@ -45,8 +45,8 @@ class Command
 
   def usages
     <<~EOT
-      \n- `pingu ping &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;`
-      \n- `pingu healthcheck &lt;domain-name.co.uk[,other-domain.dsd.io]&gt;`
+      \n- `pingu ping domain-name.co.uk[,other-domain.dsd.io]`
+      \n- `pingu healthcheck domain-name.co.uk[,other-domain.dsd.io]`
     EOT
   end
 
