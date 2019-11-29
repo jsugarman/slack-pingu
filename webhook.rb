@@ -16,14 +16,13 @@ class Webhook < Sinatra::Base
     content_type 'application/json'
     begin
       authenticate
-      ap '--------------'
-      ap params
-      ap '--------------'
       command = Command.new(params[:text])
       body command.response
     rescue SecurityError => err
       body error_response(err)
-    rescue CommandError => err
+    rescue CommandParser::UnknownCommand => err
+      body error_response(err)
+    rescue Command::TooManyDomains, Command::InvalidCommand => err
       body error_response(err)
     end
   end
