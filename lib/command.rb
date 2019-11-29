@@ -1,7 +1,7 @@
 require 'nokogiri'
 require 'httparty'
 require 'timeout'
-require 'command_parser'
+require_relative 'command_parser'
 
 class Command
   class InvalidCommand < StandardError; end
