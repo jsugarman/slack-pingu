@@ -1,4 +1,3 @@
-require 'nokogiri'
 require 'httparty'
 require 'timeout'
 require_relative 'command_parser'
@@ -28,17 +27,6 @@ class Command
     else
       raise InvalidCommand.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
     end
-
-    # case
-    # when command.match?(/pingu\s+ping\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
-    #   slack_response(ping)
-    # when command.match?(/pingu\s+healthcheck\s+<([\w\d\.-])+(\s*,\s*[\w\d\.-]+)*>/i)
-    #   slack_response(healthcheck)
-    # when command.match?(/pingu\s+(help|hi)/i)
-    #   help_response
-    # else
-    #   raise CommandError.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
-    # end
   end
 
   private
@@ -54,15 +42,7 @@ class Command
     { text: "Say one of the following:#{usages}" }.to_json
   end
 
-  # def domains
-    # @domains ||= command.
-    #   match(/(pingu\s+)((?:ping|healthcheck)\s+)(<[^>]*>)(.*)/i).
-    #   captures[2].
-    #   tr('<>','').
-    #   split(/[\s*,\s*]+/)
-  # end
-
-  def request url
+  def request(url)
     uri = URI(url)
     response = HTTParty.get(uri, timeout: 5)
     raise ResponseError if (400..550).include?(response.code.to_i)

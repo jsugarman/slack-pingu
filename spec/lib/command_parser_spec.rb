@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 RSpec.describe CommandParser do
   subject { described_class.new(text) }
   let(:text) { 'pingu help' }
@@ -40,7 +42,7 @@ RSpec.describe CommandParser do
 
     context 'unknown command' do
       let(:text) { 'pingu whatever whereever.com' }
-      it { expect { subject }.to raise_error described_class::UnknownCommand, "unknown command \"pingu whatever whereever.com\"" }
+      it { expect { subject }.to raise_error described_class::UnknownCommand, 'unknown command "pingu whatever whereever.com"' }
     end
   end
 
@@ -73,12 +75,12 @@ RSpec.describe CommandParser do
     end
 
     context 'multiple hostnames' do
-      let(:hostnames) { %w(whatever.com whereever.com anywhere.co.uk) }
+      let(:hostnames) { %w[whatever.com whereever.com anywhere.co.uk] }
 
       context 'unformatted hostnames' do
         let(:text) { 'pingu ping whatever.com, whereever.com, anywhere.co.uk' }
         it { is_expected.to match_array(hostnames) }
-       end
+      end
 
       context 'slack formatted hostnames where protocol NOT specified' do
         let(:text) { 'pingu ping <http://whatever.com|whatever.com>, <http://whereever.com|whatever.com>, <http://anywhere.co.uk|anywhere.co.uk>' }

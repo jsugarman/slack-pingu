@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# parsing slack text, including markdown,
+# to constituent parts for processing.
+#
 class CommandParser
   class UnknownCommand < StandardError; end
 
@@ -9,7 +14,7 @@ class CommandParser
 
   def command
     captures[1].strip
-  rescue NoMethodError => e
+  rescue NoMethodError
     raise UnknownCommand, "unknown command \"#{text}\""
   end
 
@@ -22,17 +27,17 @@ class CommandParser
   private
 
   def captures
-    @captures = text.
-                  match(/(pingu\s+)(ping\s*|healthcheck\s*|help\s*|hi\s*)(.*)/i).
-                  captures
+    @captures = text
+                .match(/(pingu\s+)(ping\s*|healthcheck\s*|help\s*|hi\s*)(.*)/i)
+                .captures
   end
 
   def md_to_hostname(markdown_url)
-    url = markdown_url.
-            sub(/\|.*/,'')&.
-            gsub(/&lt;|&gt;/,'')&.
-            tr('<>','')&.
-            strip
+    url = markdown_url
+          &.sub(/\|.*/, '')
+          &.gsub(/&lt;|&gt;/, '')
+          &.tr('<>', '')
+          &.strip
     URI.parse(url).hostname || url
   end
 end
