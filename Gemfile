@@ -1,15 +1,13 @@
 source 'http://rubygems.org'
 ruby '2.6.5'
 
-gem 'sinatra', '>= 2.0.2'
-
+gem 'awesome_print'
 gem 'httparty', '~> 0.13.7'
 gem 'inflecto', '~> 0.0.2'
-gem 'nokogiri', '>= 1.10.5'
 gem 'pry'
-gem 'awesome_print'
 gem 'puma'
 gem 'rack', '>= 2.0.6'
+gem 'sinatra', '>= 2.0.2'
 
 group :test do
   gem 'json_spec', '~> 1.1', '>= 1.1.5'
