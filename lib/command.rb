@@ -25,7 +25,7 @@ class Command
     when 'help', 'hi'
       help_response
     else
-      raise InvalidCommand.new("do not understand the command \"#{command.sub(/pingu\s+/i,'')}\"")
+      raise InvalidCommand, "invalid command \"#{command.sub(/pingu\s+/i,'')}\""
     end
   end
 
@@ -33,8 +33,8 @@ class Command
 
   def usages
     <<~EOT
-      \n- `pingu ping domain-name.co.uk[,other-domain.dsd.io]`
-      \n- `pingu healthcheck domain-name.co.uk[,other-domain.dsd.io]`
+      \n- `pingu ping domain-name.co.uk[, other-domain.dsd.io]`
+      \n- `pingu healthcheck domain-name.co.uk[, other-domain.dsd.io]`
     EOT
   end
 
@@ -58,7 +58,7 @@ class Command
   end
 
   def call path
-    raise TooManyDomains.new('too many domains!') if hostnames.size > 10
+    raise TooManyDomains, 'too many domains!' if hostnames.size > 10
     hostnames.each_with_object({}) do |hostname, memo|
       memo[hostname.to_sym] = request('https://' + hostname + "/#{path}")
     end
