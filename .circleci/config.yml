@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+  slack: circleci/slack@3.4.1
+
 aliases:
   _defaults: &defaults
     working_directory: &working_directory ~/repo
@@ -56,6 +59,13 @@ jobs:
       - *install-dependencies
       - *save-cache
 
+  hold-deploy:
+    <<: *defaults
+    steps:
+      - slack/approval:
+          message: "Awaiting approval for deployment"
+          mentions: "U34FHL074"
+
   deploy:
     <<: *defaults
     steps:
@@ -64,6 +74,9 @@ jobs:
           name: Deploy Master to Heroku
           command: |
             git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+      - slack/notify:
+          message: "Deployment of master to production started..."
+          mentions: "U34FHL074"
 
   rubocop:
     <<: *defaults
