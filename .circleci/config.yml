@@ -59,13 +59,6 @@ jobs:
       - *install-dependencies
       - *save-cache
 
-  hold-deploy:
-    <<: *defaults
-    steps:
-      - slack/approval:
-          message: "Awaiting approval for deployment"
-          mentions: "U34FHL074"
-
   deploy:
     <<: *defaults
     steps:
@@ -121,6 +114,16 @@ workflows:
             branches:
               only:
                 - master
+      - slack/approval-notification:
+          requires:
+            - rubocop
+            - rspec
+          filters:
+            branches:
+              only:
+                - master
+          message: "Awaiting approval for deployment"
+          mentions: "U34FHL074"
       - deploy:
           requires:
             - hold-deploy
