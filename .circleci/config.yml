@@ -4,11 +4,6 @@ orbs:
   slack: circleci/slack@3.4.1
 
 aliases:
-  _defaults: &defaults
-    working_directory: &working_directory ~/repo
-    docker:
-      - image: circleci/ruby:2.6.5-node-browsers
-
   _restore-cache: &restore-cache
     restore_cache:
       keys:
@@ -30,37 +25,83 @@ aliases:
       paths:
         - ./vendor/bundle
 
-  _rubocop: &rubocop
-    run:
-      name: Rubocop
-      command: bundle exec rubocop
+executors:
+  test-executor:
+    docker:
+      - image: circleci/ruby:2.6.5-node-browsers
+    working_directory: &working_directory ~/repo
 
-  _rspec: &rspec
-    run:
-      name: RSpec
-      command: |
-        mkdir /tmp/test-results
-        TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
-          circleci tests split --split-by=timings)"
+  ci-executor:
+    docker:
+      - image: cibuilds/base:latest
 
-        bundle exec rspec \
-          --format progress \
-          --format RspecJunitFormatter \
-          --out /tmp/test-results/rspec.xml \
-          $TEST_FILES
-      when: always
-
-jobs:
-  build:
-    <<: *defaults
+commands:
+  build-base:
     steps:
       - checkout
       - *restore-cache
       - *install-dependencies
       - *save-cache
 
+  rubocop:
+    steps:
+      - run:
+          name: Rubocop
+          command: bundle exec rubocop
+
+  rspec:
+    steps:
+      - run:
+          name: RSpec
+          command: |
+            mkdir /tmp/test-results
+            TEST_FILES="$(circleci tests glob "spec/**/*_spec.rb" | \
+              circleci tests split --split-by=timings)"
+
+            bundle exec rspec \
+              --format progress \
+              --format RspecJunitFormatter \
+              --out /tmp/test-results/rspec.xml \
+              $TEST_FILES
+          when: always
+      - store_test_results:
+          path: /tmp/test-results
+      - store_artifacts:
+          path: /tmp/test-results
+          destination: test-results
+
+  notify-approval:
+    steps:
+      - slack/approval:
+          color: '#3AA3E3'
+          mentions: "U34FHL074"
+          message: "Deployment pending approval"
+
+jobs:
+  build:
+    executor: test-executor
+    steps:
+      - build-base
+
+  rubocop:
+    executor: test-executor
+    steps:
+      - build-base
+      - rubocop
+
+  rspec:
+    executor: test-executor
+    steps:
+      - build-base
+      - rspec
+
+  hold-notification:
+    executor: ci-executor
+    steps:
+      - notify-approval
+
   deploy:
-    <<: *defaults
+    executor: ci-executor
     steps:
       - checkout
       - run:
@@ -70,29 +111,6 @@ jobs:
       - slack/notify:
           message: "Deployment of master to production started..."
           mentions: "U34FHL074"
-
-  rubocop:
-    <<: *defaults
-    steps:
-      - checkout
-      - *restore-cache
-      - *install-dependencies
-      - *save-cache
-      - *rubocop
-
-  rspec:
-    <<: *defaults
-    steps:
-      - checkout
-      - *restore-cache
-      - *install-dependencies
-      - *save-cache
-      - *rspec
-      - store_test_results:
-          path: /tmp/test-results
-      - store_artifacts:
-          path: /tmp/test-results
-          destination: test-results
 
 workflows:
   version: 2
@@ -105,25 +123,22 @@ workflows:
       - rspec:
           requires:
             - build
+      - hold-notification:
+          requires:
+            - rubocop
+            - rspec
+          filters:
+            branches:
+              only:
+                - master
       - hold-deploy:
           type: approval
           requires:
-            - rubocop
-            - rspec
+            - hold-notification
           filters:
             branches:
               only:
                 - master
-      - slack/approval-notification:
-          requires:
-            - rubocop
-            - rspec
-          filters:
-            branches:
-              only:
-                - master
-          message: "Awaiting approval for deployment"
-          mentions: "U34FHL074"
       - deploy:
           requires:
             - hold-deploy
