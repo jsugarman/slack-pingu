@@ -75,7 +75,7 @@ commands:
       - slack/approval:
           color: '#3AA3E3'
           mentions: "U34FHL074"
-          message: "Deployment pending approval"
+          message: "Deployment of <$CIRCLE_BUILD_URL|$CIRCLE_BRANCH> approval"
 
 jobs:
   build:
@@ -109,7 +109,7 @@ jobs:
           command: |
             git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
       - slack/notify:
-          message: "Deployment of master to production started..."
+          message: "Deployment of <$CIRCLE_BUILD_URL|$CIRCLE_BRANCH> to production started..."
           mentions: "U34FHL074"
 
 workflows:
