@@ -1,28 +1,12 @@
 name: Test action
 
-on: [push]
+on: [delete]
 
 jobs:
   test:
-
     runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v1
-    - name: Run a one-line script
-      run: echo Hello, world!
-    - name: Run a multi-line script
-      run: |
-        echo Add other actions to build,
-        echo test, and deploy your project.
-        # current_branch=$(git branch | grep \* | cut -d ' ' -f2)
-        # current_version=$(git rev-parse $current_branch)
-        # echo "current branch name is $current_branch"
-        # echo "current commit sha is name is $current_version"
-        echo "GITHUB_SHA: $GITHUB_SHA"
-        echo "GITHUB_REF: $GITHUB_REF"
-        echo '-------------------'
-        echo $(env)
-        echo '-------------------'
-        git branch
-
+      - uses: actions/checkout@v1
+      - name: Run a multi-line script
+        run: |
+          echo "deleting branch $GITHUB_REF with commit-sha $GITHUB_SHA"
