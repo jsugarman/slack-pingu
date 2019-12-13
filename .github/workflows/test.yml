@@ -9,4 +9,14 @@ jobs:
       - uses: actions/checkout@v1
       - name: Run a multi-line script
         run: |
-          echo "deleting branch $GITHUB_REF with commit-sha $GITHUB_SHA"
+          echo "GITHUB_REF: $GITHUB_REF"
+          echo "GITHUB_SHA: $GITHUB_SHA"
+          echo "GITHUB_EVENT_PATH: $GITHUB_EVENT_PATH"
+
+          echo '--------JSON------------'
+          echo jq . $GITHUB_EVENT_PATH
+          echo '--------JSON------------'
+
+          echo '--------------------'
+          echo $(env)
+          echo '--------------------'
