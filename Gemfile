@@ -5,7 +5,7 @@ gem 'awesome_print'
 gem 'httparty', '~> 0.13.7'
 gem 'inflecto', '~> 0.0.2'
 gem 'pry'
-gem 'puma'
+gem 'puma', '>= 3.12.4'
 gem 'rack', '>= 2.0.6'
 gem 'sinatra', '>= 2.0.2'
 
