@@ -6,8 +6,8 @@ gem 'httparty', '~> 0.13.7'
 gem 'inflecto', '~> 0.0.2'
 gem 'pry'
 gem 'puma'
-gem 'rack', '>= 2.0.6'
-gem 'sinatra', '>= 2.0.2'
+gem 'rack', '>= 2.1.3'
+gem 'sinatra', '>= 2.0.5'
 
 group :test do
   gem 'json_spec', '~> 1.1', '>= 1.1.5'
