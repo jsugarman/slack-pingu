@@ -38,6 +38,19 @@ class CommandParser
           &.gsub(/&lt;|&gt;/, '')
           &.tr('<>', '')
           &.strip
+          &.encode(Encoding.find('ASCII'), **encoding_options)
+
     URI.parse(url).hostname || url
+  end
+
+  # Replace invalid byte sequences
+  # Replace anything not defined in ASCII
+  # Use a blank for those replacements
+  # Always break lines with \n
+  def encoding_options
+    { invalid: :replace,
+      undef: :replace,
+      replace: '',
+      universal_newline: true }
   end
 end

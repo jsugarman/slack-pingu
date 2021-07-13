@@ -20,7 +20,7 @@ class Command
   end
 
   def response
-    puts "Interpreting #{command}" # unless ENV.fetch('RACK_ENV',nil) == 'test'
+    puts "Interpreting #{command}" unless ENV.fetch('RACK_ENV', nil) == 'test'
 
     case command
     when 'ping'
