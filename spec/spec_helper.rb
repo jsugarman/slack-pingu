@@ -15,8 +15,6 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require_relative '../webhook'
-require 'pry'
-require 'pry-byebug'
 require 'awesome_print'
 require 'rack/test'
 require 'json_spec'
@@ -25,7 +23,7 @@ require 'sinatra/base'
 require 'webmock/rspec'
 
 # include support files
-Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each { |f| require f }
+Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].sort.each { |f| require f }
 
 # let app know we are testing
 ENV['RACK_ENV'] = 'test'

@@ -3,9 +3,14 @@ require 'timeout'
 require_relative 'command_parser'
 
 class Command
-  class InvalidCommand < StandardError; end
-  class TooManyDomains < StandardError; end
-  class ResponseError < StandardError; end
+  class InvalidCommand < StandardError
+  end
+
+  class TooManyDomains < StandardError
+  end
+
+  class ResponseError < StandardError
+  end
 
   extend Forwardable
   def_delegators :@parser, :command, :hostnames
@@ -47,20 +52,20 @@ class Command
     response = HTTParty.get(uri, timeout: 5)
     raise ResponseError if (400..550).include?(response.code.to_i)
     response
-  rescue Timeout::Error
-    { error: "#{uri} timeout error: #{err}" }.to_json
-  rescue SocketError => err
-    { error: "#{uri} socket error: #{err}" }.to_json
-  rescue ResponseError => err
+  rescue Timeout::Error => e
+    { error: "#{uri} timeout error: #{e}" }.to_json
+  rescue SocketError => e
+    { error: "#{uri} socket error: #{e}" }.to_json
+  rescue ResponseError => e
      { error: "#{uri} unreachable: #{response.code}" }.to_json
-  rescue StandardError => err
-    { error: "#{uri} error: #{err}" }.to_json
+  rescue StandardError => e
+    { error: "#{uri} error: #{e}" }.to_json
   end
 
   def call path
     raise TooManyDomains, 'too many domains!' if hostnames.size > 10
     hostnames.each_with_object({}) do |hostname, memo|
-      memo[hostname.to_sym] = request('https://' + hostname + "/#{path}")
+      memo[hostname.to_sym] = request("https://#{hostname}/#{path}")
     end
   end
 

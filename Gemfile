@@ -1,10 +1,9 @@
 source 'http://rubygems.org'
-ruby '2.6.5'
+ruby '2.7.3'
 
 gem 'awesome_print'
-gem 'httparty', '~> 0.13.7'
+gem 'httparty', '~> 0.14'
 gem 'inflecto', '~> 0.0.2'
-gem 'pry'
 gem 'puma', '>= 3.12.6'
 gem 'rack', '>= 2.0.6'
 gem 'sinatra', '>= 2.0.2'
@@ -20,5 +19,7 @@ end
 group :development, :test do
   gem 'pry-byebug'
   gem 'rb-readline'
-  gem 'rubocop', '~> 0.50', '< 0.66'
+  gem 'rubocop'
+  gem 'rubocop-rspec'
+  gem 'rubocop-performance'
 end

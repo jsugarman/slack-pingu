@@ -101,11 +101,6 @@ Naming/HeredocDelimiterNaming:
   Exclude:
     - 'lib/command.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Performance/RangeInclude:
-  Exclude:
-    - 'lib/command.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.
