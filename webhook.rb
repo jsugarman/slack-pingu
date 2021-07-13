@@ -1,6 +1,5 @@
 require 'sinatra/base'
 require 'json'
-require 'pry'
 require 'awesome_print'
 
 Dir["#{File.dirname(__FILE__)}/lib/**/*.rb"].sort.each { |f| require f }
