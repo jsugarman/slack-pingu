@@ -15,8 +15,6 @@
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
 require_relative '../webhook'
-require 'pry'
-require 'pry-byebug'
 require 'awesome_print'
 require 'rack/test'
 require 'json_spec'
