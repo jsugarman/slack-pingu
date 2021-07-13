@@ -23,7 +23,7 @@ require 'sinatra/base'
 require 'webmock/rspec'
 
 # include support files
-Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].each { |f| require f }
+Dir[File.expand_path(File.join(File.dirname(__FILE__),'support','**','*.rb'))].sort.each { |f| require f }
 
 # let app know we are testing
 ENV['RACK_ENV'] = 'test'

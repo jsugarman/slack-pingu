@@ -3,7 +3,7 @@ require 'json'
 require 'pry'
 require 'awesome_print'
 
-Dir["#{File.dirname(__FILE__)}/lib/**/*.rb"].each { |f| require f }
+Dir["#{File.dirname(__FILE__)}/lib/**/*.rb"].sort.each { |f| require f }
 
 class Webhook < Sinatra::Base
   get '/' do
@@ -18,12 +18,12 @@ class Webhook < Sinatra::Base
       authenticate
       command = Command.new(params[:text])
       body command.response
-    rescue SecurityError => err
-      body error_response(err)
-    rescue CommandParser::UnknownCommand => err
-      body error_response(err)
-    rescue Command::TooManyDomains, Command::InvalidCommand => err
-      body error_response(err)
+    rescue SecurityError => e
+      body error_response(e)
+    rescue CommandParser::UnknownCommand => e
+      body error_response(e)
+    rescue Command::TooManyDomains, Command::InvalidCommand => e
+      body error_response(e)
     end
   end
 
