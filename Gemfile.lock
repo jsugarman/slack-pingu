@@ -1,8 +1,8 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    addressable (2.5.2)
-      public_suffix (>= 2.0.2, < 4.0)
+    addressable (2.8.0)
+      public_suffix (>= 2.0.2, < 5.0)
     ast (2.4.0)
     awesome_print (1.8.0)
     byebug (9.1.0)
@@ -36,7 +36,7 @@ GEM
       byebug (~> 9.1)
       pry (~> 0.10)
     psych (3.1.0)
-    public_suffix (3.0.1)
+    public_suffix (4.0.6)
     puma (4.3.5)
       nio4r (~> 2.0)
     rack (2.1.4)
