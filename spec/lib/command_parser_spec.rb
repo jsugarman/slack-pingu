@@ -49,6 +49,8 @@ RSpec.describe CommandParser do
   describe '#hostnames' do
     subject { described_class.new(text).hostnames }
 
+    let(:hostnames) { %w[whatever.com whereever.com anywhere.co.uk] }
+
     it { is_expected.to be_an(Array) }
     it { is_expected.to all(be_a(String)) }
 
@@ -64,38 +66,44 @@ RSpec.describe CommandParser do
       it { is_expected.to eq(['whatever.com']) }
     end
 
-    context 'one hostname old syntax, slack encoding' do
+    context 'with one hostname old syntax, slack encoding' do
       let(:text) { 'Reminder: pingu ping &lt;<http://whatever.com|whatever.com>&gt;' }
       it { is_expected.to eq(['whatever.com']) }
     end
 
-    xcontext 'one hostname old syntax, html' do
+    xcontext 'with one hostname old syntax, html' do
       let(:text) { 'Reminder: pingu ping &lt;<a href="https://whatever.com">whatever.com</a>&gt;' }
       it { is_expected.to eq(['whatever.com']) }
     end
 
-    context 'multiple hostnames' do
-      let(:hostnames) { %w[whatever.com whereever.com anywhere.co.uk] }
+    context 'with multiple unformatted hostnames' do
+      let(:text) { 'pingu ping whatever.com, whereever.com, anywhere.co.uk' }
 
-      context 'unformatted hostnames' do
-        let(:text) { 'pingu ping whatever.com, whereever.com, anywhere.co.uk' }
-        it { is_expected.to match_array(hostnames) }
-      end
+      it { is_expected.to match_array(hostnames) }
+    end
 
-      context 'slack formatted hostnames where protocol NOT specified' do
-        let(:text) { 'pingu ping <http://whatever.com|whatever.com>, <http://whereever.com|whatever.com>, <http://anywhere.co.uk|anywhere.co.uk>' }
-        it { is_expected.to match_array(hostnames) }
-      end
+    context 'with multiple hostnames where protocol NOT specified' do
+      let(:text) { 'pingu ping <http://whatever.com|whatever.com>, <http://whereever.com|whatever.com>, <http://anywhere.co.uk|anywhere.co.uk>' }
 
-      context 'slack formatted hostnames where protocol specified' do
-        let(:text) { 'pingu ping <https://whatever.com>, <https://whereever.com>, <https://anywhere.co.uk' }
-        it { is_expected.to match_array(hostnames) }
-      end
+      it { is_expected.to match_array(hostnames) }
+    end
 
-      context 'slack formatted hostnames, old syntax, reminder, protocol implicit' do
-        let(:text) { 'Reminder: pingu ping &lt;<http://whatever.com|whatever.com>, <http://whereever.com|whatever.com>, <http://anywhere.co.uk|anywhere.co.uk>&gt;' }
-        it { is_expected.to match_array(hostnames) }
-      end
+    context 'with multiple hostnames where protocol specified' do
+      let(:text) { 'pingu ping <https://whatever.com>, <https://whereever.com>, <https://anywhere.co.uk' }
+
+      it { is_expected.to match_array(hostnames) }
+    end
+
+    context 'with multiple hostnames, old slack syntax, reminder' do
+      let(:text) { 'Reminder: pingu ping &lt;<http://whatever.com|whatever.com>, <http://whereever.com|whatever.com>, <http://anywhere.co.uk|anywhere.co.uk>&gt;' }
+
+      it { is_expected.to match_array(hostnames) }
+    end
+
+    context 'with multiple hostnames including unicode' do
+      let(:text) { "pingu ping \u00A0https://whatever.com, \u00A0https://whereever.com, \u00A0https://anywhere.co.uk" }
+
+      it { is_expected.to match_array(hostnames) }
     end
   end
 end
