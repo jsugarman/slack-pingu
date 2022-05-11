@@ -24,8 +24,9 @@ GEM
     mime-types-data (3.2021.0704)
     multi_json (1.12.2)
     multi_xml (0.6.0)
-    mustermann (1.0.3)
-    nio4r (2.5.7)
+    mustermann (1.1.1)
+      ruby2_keywords (~> 0.0.1)
+    nio4r (2.5.8)
     parallel (1.20.1)
     parser (3.0.2.0)
       ast (~> 2.4.1)
@@ -36,10 +37,10 @@ GEM
       byebug (~> 11.0)
       pry (~> 0.10)
     public_suffix (4.0.6)
-    puma (4.3.8)
+    puma (5.6.4)
       nio4r (~> 2.0)
     rack (2.2.3)
-    rack-protection (2.0.5)
+    rack-protection (2.2.0)
       rack
     rack-test (0.6.3)
       rack (>= 1.0)
@@ -78,14 +79,15 @@ GEM
     rubocop-rspec (1.35.0)
       rubocop (>= 0.60.0)
     ruby-progressbar (1.11.0)
+    ruby2_keywords (0.0.5)
     ruby_ttt (0.4.9)
     safe_yaml (1.0.4)
-    sinatra (2.0.5)
+    sinatra (2.2.0)
       mustermann (~> 1.0)
-      rack (~> 2.0)
-      rack-protection (= 2.0.5)
+      rack (~> 2.2)
+      rack-protection (= 2.2.0)
       tilt (~> 2.0)
-    tilt (2.0.9)
+    tilt (2.0.10)
     unicode-display_width (2.0.0)
     webmock (2.3.2)
       addressable (>= 2.3.6)
@@ -102,7 +104,7 @@ DEPENDENCIES
   json_spec (~> 1.1, >= 1.1.5)
   pry
   pry-byebug
-  puma (>= 3.12.6)
+  puma (>= 4.3.12)
   rack (>= 2.0.6)
   rack-test (~> 0.6.3)
   rb-readline
@@ -111,11 +113,11 @@ DEPENDENCIES
   rubocop-performance
   rubocop-rspec
   ruby_ttt (~> 0.4.9)
-  sinatra (>= 2.0.2)
+  sinatra (>= 2.2.0)
   webmock (~> 2.1)
 
 RUBY VERSION
    ruby 2.7.3p183
 
 BUNDLED WITH
-   2.2.23
+   2.1.4
