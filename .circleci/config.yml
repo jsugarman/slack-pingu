@@ -130,7 +130,7 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - hold-deploy:
           type: approval
           requires:
@@ -138,11 +138,11 @@ workflows:
           filters:
             branches:
               only:
-                - master
+                - main
       - deploy:
           requires:
             - hold-deploy
           filters:
             branches:
               only:
-                - master
+                - main

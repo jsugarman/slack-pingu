@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/jsugarman/slack-pingu/tree/master.svg?style=svg)](https://circleci.com/gh/jsugarman/slack-pingu/tree/master)
+[![CircleCI](https://circleci.com/gh/jsugarman/slack-pingu/tree/main.svg?style=svg)](https://circleci.com/gh/jsugarman/slack-pingu/tree/main)
 [![Reviewed by Hound](https://img.shields.io/badge/Reviewed_by-Hound-8E64B0.svg)](https://houndci.com)
 
 Slack webhook/bot for notifying a channel of JSON responses from ping and healthcheck endpoints
