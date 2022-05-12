@@ -2,6 +2,7 @@ version: 2.1
 
 orbs:
   slack: circleci/slack@3.4.1
+  heroku: circleci/heroku@1.2.6
 
 aliases:
   _restore-cache: &restore-cache
@@ -101,13 +102,11 @@ jobs:
       - notify-approval
 
   deploy:
-    executor: ci-executor
+    executor: heroku/default
     steps:
       - checkout
-      - run:
-          name: Deploy Master to Heroku
-          command: |
-            git push -f https://heroku:$HEROKU_API_KEY@git.heroku.com/$HEROKU_APP_NAME.git master
+      - heroku/install
+      - heroku/deploy-via-git
       - slack/notify:
           message: "Deployment of <$CIRCLE_BUILD_URL|$CIRCLE_BRANCH> to production started..."
           mentions: "U34FHL074"
