@@ -2,7 +2,7 @@ source 'http://rubygems.org'
 ruby '2.7.3'
 
 gem 'awesome_print'
-gem 'httparty', '~> 0.14'
+gem 'httparty', '~> 0.21'
 gem 'inflecto', '~> 0.0.2'
 gem 'puma', '>= 4.3.12'
 gem 'rack', '>= 2.0.6'
